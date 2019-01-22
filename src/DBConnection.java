@@ -39,7 +39,7 @@ public class DBConnection {
         Connection connection = null;
         try {
             connection = DriverManager
-                    .getConnection("jdbc:postgresql://localhost:5432/BOOKS",
+                    .getConnection("jdbc:postgresql://localhost:5432/BOOK_SHOP_PROJECT",
                             user, password);
         } catch (Exception e) {
             e.printStackTrace();

@@ -30,7 +30,7 @@ public class Main {
                 storage.fillTables(dbConnection.dbConnect());
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Database BOOK_SHOP_PROJECT already exists.");
         }
 
 

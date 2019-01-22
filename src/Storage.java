@@ -18,7 +18,7 @@ public class Storage {
     boolean exists(Connection serverConnection) {
         boolean exists = true;
         try {
-            String sql = "SELECT * FROM \"BOOK_SHOP_PROJECT\"";
+            String sql = "CREATE DATABASE \"BOOK_SHOP_PROJECT\"";
             Statement statement = serverConnection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             statement.close();
@@ -269,7 +269,7 @@ public class Storage {
         User user;
         UserInputReader userInputReader = new UserInputReader();
         Statement statement = dbConnection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM \"USERS_TABLE\" WHERE (login) = " + login);
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM \"USERS\" WHERE (login) = " + login);
         String password;
         while (true) {
             try {
@@ -358,26 +358,10 @@ public class Storage {
 
         String removeOrder = "DELETE * FROM \"ORDERS\" WHERE (id) = " + orderId.getInt("id");
         statement.execute(removeOrder);
+        removeOrder = "DELETE * FROM \"ORDERS_POSITIONS\" WHERE (orderid) = " + orderId.getInt("id");
         statement.close();
     }
 
-/*    //Метод перевода результата запроса в список книг.
-    List<Order> resultToOrdersList(ResultSet resultSet, ResultSet resultSet) throws SQLException {
-        List<Order> orders = new ArrayList<>();
-        while (resultSet.next()) {
-            User user = new User(resultSet.getString("login"));
-            String title = resultSet.getString("title");
-            String publisher = resultSet.getString("publisher");
-            int year = resultSet.getInt("year");
-            int pages = resultSet.getInt("pages");
-            double price = resultSet.getDouble("price");
-            int quantity = resultSet.getInt("quantity");
-            Book book = new Book(author, title, publisher, year, pages, price);
-            book.setQuantity(quantity);
-            orders.add(order);
-        }
-        return orders;
-    }*/
 
     // Метод чтения заказов пользователя из базы данных в список.
     List<Order> readOrdersFromTable(User user, Connection dbConnection) throws SQLException {
@@ -385,7 +369,7 @@ public class Storage {
         List<Order> orders = new ArrayList<>();
         List<Book> books;
         Statement statement = dbConnection.createStatement();
-        ResultSet resultSetUsers = statement.executeQuery("SELECT * FROM \"USERS_TABLE\" WHERE (login) = " +
+        ResultSet resultSetUsers = statement.executeQuery("SELECT * FROM \"USERS\" WHERE (login) = " +
                 user.getLogin());
         ResultSet resultSetOrders = statement.executeQuery("SELECT * FROM \"ORDERS\" WHERE (userId) = " +
                 resultSetUsers.getInt("id"));
@@ -408,3 +392,20 @@ public class Storage {
     }
 }
 
+/*    //Метод перевода результата запроса в список книг.
+    List<Order> resultToOrdersList(ResultSet resultSet, ResultSet resultSet) throws SQLException {
+        List<Order> orders = new ArrayList<>();
+        while (resultSet.next()) {
+            User user = new User(resultSet.getString("login"));
+            String title = resultSet.getString("title");
+            String publisher = resultSet.getString("publisher");
+            int year = resultSet.getInt("year");
+            int pages = resultSet.getInt("pages");
+            double price = resultSet.getDouble("price");
+            int quantity = resultSet.getInt("quantity");
+            Book book = new Book(author, title, publisher, year, pages, price);
+            book.setQuantity(quantity);
+            orders.add(order);
+        }
+        return orders;
+    }*/
