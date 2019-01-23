@@ -33,12 +33,18 @@ public class Menu {
             }
         } else {
             while (true) {
+                User tempUser;
                 String login = userInputReader.askString("Please enter login");
+                String password = userInputReader.askString("Enter password for " + login);
                 try {
-                    currentUser = storage.readUserFromTable(login, connection);
-                    break;
+                    tempUser = storage.readUserFromTable(login, connection);
+                    if (tempUser.getPassword().equals(password)) {
+                        currentUser = tempUser;
+                        break;
+                    }
+                    else System.out.println("Invalid login\\password combination try again");
                 } catch (SQLException e) {
-                    System.out.println("User not found");
+                    System.out.println("No user found with matching login.");
                 }
             }
         }

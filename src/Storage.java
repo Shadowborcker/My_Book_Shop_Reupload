@@ -266,29 +266,12 @@ public class Storage {
 
     // Метод чтения данных пользователя из базы данных.
     User readUserFromTable(String login, Connection dbConnection) throws SQLException {
-        User user;
         UserInputReader userInputReader = new UserInputReader();
         Statement statement = dbConnection.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM \"USERS\" WHERE (login) = " + login);
         String password;
-        while (true) {
-            try {
-                password = userInputReader.askString("Enter password for " + login);
-                break;
-            } catch (IOException e) {
-                System.out.println("Invalid password.");
-            }
-        }
-        while (true) {
-            if (resultSet.getString("password").equals(password)) {
-                login = resultSet.getString("login");
-                double money = resultSet.getDouble("money");
-                user = new User(login, password, money);
-                resultSet.close();
-                break;
-            } else System.out.println("Invalid password, try again");
-        }
-
+        User user = new User(resultSet.getString("login"), resultSet.getString("password"),
+                resultSet.getDouble("money"));
         statement.close();
         return user;
     }
