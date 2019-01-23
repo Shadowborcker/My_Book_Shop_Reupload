@@ -30,10 +30,10 @@ public class User {
         return money;
     }
 
-    public User(String login, String password, double money) {
+    public User(String login/*, String password, double money*/) {
         this.login = login;
-        this.password = password;
-        this.money = money;
+/*        this.password = password;
+        this.money = money;*/
     }
 
     @Override

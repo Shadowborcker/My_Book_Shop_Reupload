@@ -23,7 +23,9 @@ public class Menu {
                 String login = userInputReader.askString("Please enter desired login");
                 String password = userInputReader.askString("Please enter new password");
                 double money = userInputReader.askDouble("Please enter your balance");
-                currentUser = new User(login, password, money);
+                currentUser = new User(login);
+                currentUser.setPassword(password);
+                currentUser.setMoney(money);
                 try {
                     storage.addUserToTable(currentUser, connection);
                     break;
@@ -70,7 +72,7 @@ public class Menu {
         menumap.put("show basket", new MenuItemShowBasket());
         menumap.put("create order", new MenuItemCreateOrder());
         menumap.put("show orders", new MenuItemShowOrders());
-//        menumap.put("remove order", new MenuItemRemoveOrder());
+        menumap.put("remove order", new MenuItemRemoveOrders());
 //        menumap.put("checkout", new MenuItemCheckOut());
         menumap.put("exit", new MenuItemExit());
 

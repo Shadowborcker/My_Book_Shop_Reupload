@@ -270,8 +270,9 @@ public class Storage {
         Statement statement = dbConnection.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM \"USERS\" WHERE (login) = " + login);
         String password;
-        User user = new User(resultSet.getString("login"), resultSet.getString("password"),
-                resultSet.getDouble("money"));
+        User user = new User(resultSet.getString("login"));
+        user.setPassword(resultSet.getString("password"));
+        user.setMoney(resultSet.getDouble("money"));
         statement.close();
         return user;
     }
@@ -331,8 +332,8 @@ public class Storage {
         preparedStatement.close();
     }
 
-    //Метод удаления заказа из базы данных.
-    void removeOrderFromTables(String login, Connection dbConnection) throws SQLException {
+    //Метод удаления всех заказов пользователя из базы данных.
+    void removeUsersOrdersFromTables(String login, Connection dbConnection) throws SQLException {
         Statement statement = dbConnection.createStatement();
         ResultSet userId = statement.executeQuery("SELECT * FROM \"USERS\" WHERE" +
                 " (login) = " + login);
@@ -342,18 +343,32 @@ public class Storage {
         String removeOrder = "DELETE * FROM \"ORDERS\" WHERE (id) = " + orderId.getInt("id");
         statement.execute(removeOrder);
         removeOrder = "DELETE * FROM \"ORDERS_POSITIONS\" WHERE (orderid) = " + orderId.getInt("id");
+        statement.execute(removeOrder);
         statement.close();
     }
 
+    //Метод увдаления отдельного заказа из базы данных.
+    void removeOrderFromTables(Order order, Connection dbConnection) throws SQLException {
+        Statement statement = dbConnection.createStatement();
+        ResultSet userId = statement.executeQuery("SELECT * FROM \"USERS\" WHERE" +
+                " (login) = " + order.getUser().getLogin());
+        ResultSet orderId = statement.executeQuery("SELECT * FROM \"ORDERS\" WHERE" +
+                " (userId) = " + userId.getInt("id"));
+        String removeOrder = "DELETE * FROM \"ORDERS\" WHERE (id) = " + orderId.getInt("id");
+        statement.execute(removeOrder);
+        removeOrder = "DELETE * FROM \"ORDERS_POSITIONS\" WHERE (orderid) = " + orderId.getInt("id");
+        statement.execute(removeOrder);
+        statement.close();
+    }
 
     // Метод чтения заказов пользователя из базы данных в список.
-    List<Order> readOrdersFromTable(User user, Connection dbConnection) throws SQLException {
+    List<Order> readOrdersFromTable(String login, Connection dbConnection) throws SQLException {
         Order order;
         List<Order> orders = new ArrayList<>();
         List<Book> books;
         Statement statement = dbConnection.createStatement();
         ResultSet resultSetUsers = statement.executeQuery("SELECT * FROM \"USERS\" WHERE (login) = " +
-                user.getLogin());
+                login);
         ResultSet resultSetOrders = statement.executeQuery("SELECT * FROM \"ORDERS\" WHERE (userId) = " +
                 resultSetUsers.getInt("id"));
         ResultSet resultSetPositions;
@@ -365,6 +380,7 @@ public class Storage {
             booksOrdered = statement.executeQuery("SELECT * FROM \"SHOP_DEPO\" " +
                     "WHERE (id) = " + resultSetPositions.getInt("bookId"));
             books = resultToBooksList(booksOrdered);
+            User user = new User(login);
             order = new Order(user,books);
             orders.add(order);
         }

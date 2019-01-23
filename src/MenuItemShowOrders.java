@@ -7,6 +7,8 @@ import java.util.List;
 //Опция меню для просмотра заказов пользователя.
 class MenuItemShowOrders extends QueryHelper implements MenuItem {
 
+    List<Order> orders;
+
     public String description() {
         return "Showing current users's orders.";
     }
@@ -19,10 +21,10 @@ class MenuItemShowOrders extends QueryHelper implements MenuItem {
         } catch (SQLException e) {
             System.out.println("No matching login found in database.");
         }
-        List<Order> orders;
+
         try {
             System.out.println(description());
-            orders = storage.readOrdersFromTable(user, connection);
+            orders = storage.readOrdersFromTable(login, connection);
             int i = 0;
             for (Order order : orders) {
                 System.out.println(i + ". " + order);
