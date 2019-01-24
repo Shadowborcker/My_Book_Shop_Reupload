@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //Опция меню для добавления книги в магазин или домашнюю библиотеку.
-class MenuItemAddBook extends QueryHelper implements MenuItem {
+class MenuItemBookAdder extends QueryHelper implements MenuItem {
 
     public String description() {
         return "Adding to books to specified location";

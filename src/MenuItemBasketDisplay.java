@@ -1,7 +1,7 @@
 import java.text.DecimalFormat;
 
 //Опция меню для просмотра содержимого корзины.
-class MenuItemShowBasket extends QueryHelper implements MenuItem {
+class MenuItemBasketDisplay extends QueryHelper implements MenuItem {
 
     public String description() {
         return "Showing book(s) in your basket.";

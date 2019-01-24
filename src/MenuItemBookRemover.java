@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //Опция меню для удаления книг из магазина или домашней библиотеки.
-class MenuItemRemoveBook extends QueryHelper implements MenuItem {
+class MenuItemBookRemover extends QueryHelper implements MenuItem {
 
     public String description() {
         return "Removing books from a location specified.";

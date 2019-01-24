@@ -1,7 +1,7 @@
 import java.io.IOException;
 
 //Опция меню для удаления книг из корзины.
-class MenuItemRemoveFromBasket extends QueryHelper implements MenuItem {
+class MenuItemBasketCleaner extends QueryHelper implements MenuItem {
 
     public String description() {
         return "Removing book(s) from your basket.";

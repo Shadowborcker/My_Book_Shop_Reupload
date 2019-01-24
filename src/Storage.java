@@ -216,13 +216,6 @@ public class Storage {
         }
         removeBook = "UPDATE " + table + " SET quantity = " + (currentQuantity - book.getQuantity()) +
                 " WHERE title = " + resultSet.getString("title");
-
-/*        String removeBook = "DELETE * FROM " + table + " WHERE LOWER(author) = " + book.getAuthor().toLowerCase() +
-                " AND LOWER(title) = " + book.getTitle().toLowerCase() +
-                " AND LOWER(publisher) = " + book.getPublisher().toLowerCase() +
-                " AND year = " + book.getYear() +
-                " AND pages = " + book.getPages() +
-                " AND price = " + book.getPrice();*/
         statement.execute(removeBook);
         statement.close();
     }
@@ -299,7 +292,7 @@ public class Storage {
         preparedStatement.setBoolean(3, false);
         preparedStatement.executeUpdate();
 
-        for (Book book: books) {
+        for (Book book : books) {
             ResultSet bookId = statement.executeQuery("SELECT * FROM \"SHOP_DEPO\" WHERE author = "
                     + book.getAuthor() +
                     " AND title = " + book.getTitle() +
@@ -308,7 +301,7 @@ public class Storage {
                     " AND pages = " + book.getPages() +
                     " AND price = " + book.getPrice());
 
-            if (book.getQuantity()> bookId.getInt("quantity")) {
+            if (book.getQuantity() > bookId.getInt("quantity")) {
                 System.out.println("Not enough books in shop depository");
                 throw new SQLException();
             }
@@ -358,6 +351,21 @@ public class Storage {
         statement.execute(removeOrder);
         removeOrder = "DELETE * FROM \"ORDERS_POSITIONS\" WHERE (orderid) = " + orderId.getInt("id");
         statement.execute(removeOrder);
+
+        for (Book book : order.getBooks()) {
+            ResultSet bookId = statement.executeQuery("SELECT * FROM \"SHOP_DEPO\" WHERE author = "
+                    + book.getAuthor() +
+                    " AND title = " + book.getTitle() +
+                    " AND publisher = " + book.getPublisher() +
+                    " AND year = " + book.getYear() +
+                    " AND pages = " + book.getPages() +
+                    " AND price = " + book.getPrice());
+
+            String updateQuantity = "UPDATE \"SHOP_DEPO\" SET quantity = " +
+                    (bookId.getInt("quantity") + book.getQuantity()) +
+                    " WHERE id = " + bookId.getInt("id");
+            statement.executeUpdate(updateQuantity);
+        }
         statement.close();
     }
 
@@ -381,7 +389,7 @@ public class Storage {
                     "WHERE (id) = " + resultSetPositions.getInt("bookId"));
             books = resultToBooksList(booksOrdered);
             User user = new User(login);
-            order = new Order(user,books);
+            order = new Order(user, books);
             orders.add(order);
         }
         resultSetOrders.close();

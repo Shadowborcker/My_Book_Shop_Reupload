@@ -1,10 +1,9 @@
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 //Опция меню для удаления пользователя из базы данных.
-class MenuItemRemoveUser extends QueryHelper implements MenuItem {
+class MenuItemUserRemover extends QueryHelper implements MenuItem {
 
     public String description() {
         return "Removing user from database.";

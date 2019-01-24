@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 //Опция меню для переноса книги в корзину.
-class MenuItemMoveToBasket extends QueryHelper implements MenuItem {
+class MenuItemBasketHolder extends QueryHelper implements MenuItem {
 
     public String description() {
         return "Moving book(s) to your basket.";

@@ -58,21 +58,21 @@ public class Menu {
 
     private HashMap<String, MenuItem> menuMap() {
         HashMap<String, MenuItem> menumap = new HashMap<>();
-        menumap.put("show menu", new MenuItemShowMenu());
+        menumap.put("show menu", new MenuItemMenuDisplay());
 //        menumap.put("add user", new MenuItemAddUser());
-        menumap.put("remove user", new MenuItemRemoveUser());
+        menumap.put("remove user", new MenuItemUserRemover());
 //        menumap.put("login", new MenuItemLogin());
-        menumap.put("show books", new MenuItemShowBooks());
-        menumap.put("add book", new MenuItemAddBook());
-        menumap.put("remove book", new MenuItemRemoveBook());
-        menumap.put("sort", new MenuItemSort());
-        menumap.put("search", new MenuItemSearch());
-        menumap.put("move to basket", new MenuItemMoveToBasket());
-        menumap.put("remove from basket", new MenuItemRemoveFromBasket());
-        menumap.put("show basket", new MenuItemShowBasket());
-        menumap.put("create order", new MenuItemCreateOrder());
-        menumap.put("show orders", new MenuItemShowOrders());
-        menumap.put("remove order", new MenuItemRemoveOrders());
+        menumap.put("show books", new MenuItemBooksDisplay());
+        menumap.put("add book", new MenuItemBookAdder());
+        menumap.put("remove book", new MenuItemBookRemover());
+        menumap.put("sort", new MenuItemBooksSorter());
+        menumap.put("search", new MenuItemBookFinder());
+        menumap.put("move to basket", new MenuItemBasketHolder());
+        menumap.put("remove from basket", new MenuItemBasketCleaner());
+        menumap.put("show basket", new MenuItemBasketDisplay());
+        menumap.put("create order", new MenuItemOrderAdder());
+        menumap.put("show orders", new MenuItemOrdersDisplay());
+        menumap.put("remove order", new MenuItemOrderRemover());
 //        menumap.put("checkout", new MenuItemCheckOut());
         menumap.put("exit", new MenuItemExit());
 

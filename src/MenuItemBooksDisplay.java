@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 //Опция меню для отображения содержимого магазина или домашней библиотеки.
-class MenuItemShowBooks extends QueryHelper implements MenuItem {
+class MenuItemBooksDisplay extends QueryHelper implements MenuItem {
 
     public String description() {
         return "Showing all books in specified location";

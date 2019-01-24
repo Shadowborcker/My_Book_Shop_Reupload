@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 //Опция меню для поиска книги в магазине или домашней библиотеке.
-class MenuItemSearch extends QueryHelper implements MenuItem {
+class MenuItemBookFinder extends QueryHelper implements MenuItem {
 
     public String description() {
         return "Here is what we managed to find.";
@@ -28,7 +28,6 @@ class MenuItemSearch extends QueryHelper implements MenuItem {
         } catch (NullPointerException e) {
             System.out.println("We did not find any books matching your criteria.");
         }
-
 
         System.out.println();
         connection.close();

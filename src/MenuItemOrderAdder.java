@@ -1,7 +1,7 @@
 import java.sql.SQLException;
 
 //Опция меню для размещения заказов в базе данных.
-class MenuItemCreateOrder extends QueryHelper implements MenuItem {
+class MenuItemOrderAdder extends QueryHelper implements MenuItem {
 
     public String description() {
         return "Ordering your books, Sir";

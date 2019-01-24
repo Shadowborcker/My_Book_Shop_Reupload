@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //Опция меню для просмотра заказов пользователя.
-class MenuItemShowOrders extends QueryHelper implements MenuItem {
+class MenuItemOrdersDisplay extends QueryHelper implements MenuItem {
 
     List<Order> orders;
 

@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 //Опция меню для сортировки книг в магазине или домашней библиотеке.
-class MenuItemSort extends QueryHelper implements MenuItem {
+class MenuItemBooksSorter extends QueryHelper implements MenuItem {
 
     public String description() {
         return "Showing sorted books in specified location";

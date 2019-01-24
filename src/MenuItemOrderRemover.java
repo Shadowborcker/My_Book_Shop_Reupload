@@ -2,7 +2,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 //Опция меню для удаления заказов пользователя.
-public class MenuItemRemoveOrders extends QueryHelper implements MenuItem {
+public class MenuItemOrderRemover extends QueryHelper implements MenuItem {
 
     public String description() {
         return "Removing order from database.";
@@ -10,7 +10,7 @@ public class MenuItemRemoveOrders extends QueryHelper implements MenuItem {
 
     public void select() throws IOException {
         boolean isPaid;
-        MenuItemShowOrders menuItemShowOrders = new MenuItemShowOrders();
+        MenuItemOrdersDisplay menuItemShowOrders = new MenuItemOrdersDisplay();
         menuItemShowOrders.select();
         int i;
         while (true) {

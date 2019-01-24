@@ -1,5 +1,5 @@
 //Опция меню для отображения всех пунктов меню.
-class MenuItemShowMenu extends QueryHelper implements MenuItem {
+class MenuItemMenuDisplay extends QueryHelper implements MenuItem {
     public String description() {
         return "Showing all available commands";
     }
