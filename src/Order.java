@@ -2,6 +2,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 public class Order {
+    int id;
     User user;
     List<Book> books;
     boolean isPaid;
@@ -16,8 +17,8 @@ public class Order {
         }
     }
 
-    public void pay(Order order) {
-        order.isPaid = true;
+    public void setPaid(boolean paid) {
+        isPaid = paid;
     }
 
     public User getUser() {
@@ -34,6 +35,14 @@ public class Order {
 
     public double getSum() {
         return sum;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String bookListToString(List<Book> books) {

@@ -15,9 +15,8 @@ class MenuItemOrdersDisplay extends QueryHelper implements MenuItem {
 
     public void select() throws IOException {
         String login = userInputReader.askString("Enter user's login to look for his orders list.");
-        User user = null;
         try {
-            user = storage.readUserFromTable(login, connection);
+            storage.readUserFromTable(login, connection);
         } catch (SQLException e) {
             System.out.println("No matching login found in database.");
         }

@@ -19,7 +19,7 @@ class MenuItemBookRemover extends QueryHelper implements MenuItem {
         author = surname + " " + name;
         String location = Menu.submenuLocation();
         List<Book> found = new ArrayList<>();
-        int index = 0;
+        int index = 1;
 
         try {
             found = storage.searchTableForBook(author, title, location, connection);

@@ -390,12 +390,23 @@ public class Storage {
             books = resultToBooksList(booksOrdered);
             User user = new User(login);
             order = new Order(user, books);
+            order.setId(resultSetOrders.getInt("id"));
             orders.add(order);
         }
         resultSetOrders.close();
         statement.close();
 
         return orders;
+    }
+
+    //Метод оплаты заказа текущего юзера.
+    void payForOrder(Order order, Connection dbConnection) throws SQLException {
+        Statement statement = dbConnection.createStatement();
+        ResultSet resultSetUsers = statement.executeQuery("SELECT * FROM \"USERS\" WHERE (login) = " +
+                order.getUser().getLogin());
+
+        String updateIsPaid = "UPDATE \"ORDERS\" SET isPaid = true WHERE (id) = " + order.getId();
+        statement.executeUpdate(updateIsPaid);
     }
 }
 
