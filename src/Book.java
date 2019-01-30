@@ -10,6 +10,7 @@ public class Book {
     private int pages;
     private double price;
     private int quantity;
+    int id;
 
     public String getAuthor() {
         return author;
@@ -65,6 +66,14 @@ public class Book {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     //Переопределяем equals и hashCode для сравнения книг, поле количество не учитывается.

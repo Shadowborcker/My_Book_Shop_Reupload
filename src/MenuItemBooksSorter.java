@@ -25,7 +25,7 @@ class MenuItemBooksSorter extends QueryHelper implements MenuItem {
             System.out.println("Nothing to sort.");
         }
         System.out.println();
-        connection.close();
+
 
     }
 

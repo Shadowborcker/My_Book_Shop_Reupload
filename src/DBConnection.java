@@ -3,23 +3,14 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-public class DBConnection {
+class DBConnection {
 
-    static String user;
-    static String password;
-
-    static {
-        UserInputReader userInputReader = new UserInputReader();
-        try {
-            user = userInputReader.askString("Enter user name");
-            password = userInputReader.askString("Enter password");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    static UserInputReader userInputReader = new UserInputReader();
+    static String user = userInputReader.askString("Enter user name");
+    static String password = userInputReader.askString("Enter password");
 
 
-    public Connection serverConnect() {
+    Connection serverConnect() {
         Connection connection = null;
         try {
 
@@ -28,14 +19,14 @@ public class DBConnection {
                             user, password);
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
         System.out.println("Connected to server");
         return connection;
     }
 
-    public Connection dbConnect() {
+    Connection dbConnect() {
         Connection connection = null;
         try {
             connection = DriverManager
@@ -43,7 +34,7 @@ public class DBConnection {
                             user, password);
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
         System.out.println("Connected to database");

@@ -1,3 +1,4 @@
+import java.sql.SQLException;
 
 //Опция меню для выхода из программы.
 class MenuItemExit extends QueryHelper implements MenuItem {
@@ -8,6 +9,11 @@ class MenuItemExit extends QueryHelper implements MenuItem {
 
     public void select() {
         System.out.println(description());
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            System.exit(0);
+        }
         System.exit(0);
     }
 

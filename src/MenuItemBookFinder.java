@@ -30,7 +30,7 @@ class MenuItemBookFinder extends QueryHelper implements MenuItem {
         }
 
         System.out.println();
-        connection.close();
+
 
     }
 

@@ -2,6 +2,7 @@ import java.util.Objects;
 
 public class User {
 
+    int id;
     private String login;
     private String password;
     private double money = 12000.00;
@@ -28,6 +29,14 @@ public class User {
 
     public double getMoney() {
         return money;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public User(String login/*, String password, double money*/) {

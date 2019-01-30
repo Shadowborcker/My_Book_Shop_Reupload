@@ -74,6 +74,7 @@ public class Menu {
         menumap.put("show orders", new MenuItemOrdersDisplay());
         menumap.put("remove order", new MenuItemOrderRemover());
         menumap.put("checkout", new MenuItemCheckOut());
+        menumap.put("ship", new MenuItemShipper());
         menumap.put("exit", new MenuItemExit());
 
         return menumap;

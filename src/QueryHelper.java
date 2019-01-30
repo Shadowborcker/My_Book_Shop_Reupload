@@ -1,4 +1,5 @@
 import java.sql.Connection;
+import java.sql.Statement;
 
 public class QueryHelper {
     BookFactory bookFactory = new BookFactory();
@@ -6,4 +7,5 @@ public class QueryHelper {
     Storage storage = new Storage();
     DBConnection dbConnection = new DBConnection();
     Connection connection = dbConnection.dbConnect();
+    Connection connectionTwo = dbConnection.dbConnect();
 }

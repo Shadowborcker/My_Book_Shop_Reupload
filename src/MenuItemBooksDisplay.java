@@ -16,7 +16,7 @@ class MenuItemBooksDisplay extends QueryHelper implements MenuItem {
         List<Book> books;
 
 
-        books = storage.readBooksFromTable(location, connection);
+        books = storage.readBooksFromTable(location, Menu.currentUser.getId(), connection, connectionTwo);
 
 
         if (books.size() != 0) {
@@ -39,7 +39,6 @@ class MenuItemBooksDisplay extends QueryHelper implements MenuItem {
             }
         }
         System.out.println();
-        connection.close();
 
     }
 

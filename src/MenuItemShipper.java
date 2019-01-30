@@ -1,19 +1,17 @@
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
-//Опция меню для просмотра заказов пользователя.
-class MenuItemOrdersDisplay extends QueryHelper implements MenuItem {
+public class MenuItemShipper extends QueryHelper implements MenuItem {
 
-    List<Order> orders;
+    private List<Order> orders;
+    private int i = 1;
 
     public String description() {
-        return "Showing current users's orders.";
+        return "Shipping items to user's address.";
     }
 
     public void select() {
+        Order orderToShip;
         String login = userInputReader.askString("Enter user's login to look for his orders list.");
         try {
             storage.readUserFromTable(login, connection);
@@ -22,9 +20,8 @@ class MenuItemOrdersDisplay extends QueryHelper implements MenuItem {
         }
 
         try {
-            System.out.println(description());
             orders = storage.readOrdersFromTable(login, connection);
-            int i = 1;
+
             for (Order order : orders) {
                 System.out.println(i + ". " + order);
                 i++;
@@ -32,5 +29,10 @@ class MenuItemOrdersDisplay extends QueryHelper implements MenuItem {
         } catch (SQLException e) {
             System.out.println("Current user has no active orders.");
         }
+
+        orderToShip = orders.get(userInputReader.askInt("Choose order to ship"));
+//        storage.sipOrder(orderToShip);
+
+
     }
 }

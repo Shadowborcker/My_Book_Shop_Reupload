@@ -38,7 +38,7 @@ class MenuItemBookRemover extends QueryHelper implements MenuItem {
         storage.removeBookFromTable(book, location, connection);
         System.out.println(description());
         System.out.println();
-        connection.close();
+
     }
 
 }
