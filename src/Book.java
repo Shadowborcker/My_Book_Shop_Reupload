@@ -1,3 +1,5 @@
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.text.DecimalFormat;
 
@@ -86,7 +88,7 @@ public class Book {
                 Objects.equals(title.toLowerCase(), book.title.toLowerCase());
     }
 
-    @Override
+        @Override
     public int hashCode() {
         return Objects.hash(author, title, publisher, year, pages, price);
     }
@@ -116,5 +118,12 @@ public class Book {
         this.price = price;
     }
 
+/*    @Override
+    public int compareTo(Book b) {
+        if (getAuthor() == null || b.getAuthor() == null) {
+            return 0;
+        }
+        return getAuthor().compareTo(b.getAuthor());
+    }*/
 
 }

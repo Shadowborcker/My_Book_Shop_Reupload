@@ -58,18 +58,15 @@ public class Menu {
 
     private HashMap<String, MenuItem> menuMap() {
         HashMap<String, MenuItem> menumap = new HashMap<>();
-        menumap.put("show menu", new MenuItemMenuDisplay());
-//        menumap.put("add user", new MenuItemAddUser());
+        menumap.put("show menu", new MenuItemMenuDisplay()); //Tested
         menumap.put("remove user", new MenuItemUserRemover());
-//        menumap.put("login", new MenuItemLogin());
-        menumap.put("show books", new MenuItemBooksDisplay());
+        menumap.put("show books", new MenuItemBooksDisplay()); //Tested
         menumap.put("add book", new MenuItemBookAdder());
         menumap.put("remove book", new MenuItemBookRemover());
-        menumap.put("sort", new MenuItemBooksSorter());
+        menumap.put("sort", new MenuItemBooksSorter()); // Tested
         menumap.put("search", new MenuItemBookFinder());
-        menumap.put("move to basket", new MenuItemBasketHolder());
+        menumap.put("move to basket", new MenuItemBasketHolder()); //Tested
         menumap.put("remove from basket", new MenuItemBasketCleaner());
-        menumap.put("show basket", new MenuItemBasketDisplay());
         menumap.put("create order", new MenuItemOrderAdder());
         menumap.put("show orders", new MenuItemOrdersDisplay());
         menumap.put("remove order", new MenuItemOrderRemover());
@@ -95,7 +92,7 @@ public class Menu {
         while (location == null) {
 
             String choice = userInputReader.askString("Where would you like to look?\n" +
-                    "Store\\Library");
+                    "Store\\Library\\Basket");
             switch (choice.toLowerCase()) {
                 case "store": {
                     location = "\"SHOP_DEPO\"";
@@ -105,8 +102,12 @@ public class Menu {
                     location = "\"HOME_LIBRARY\"";
                     break;
                 }
+                case "basket": {
+                    location = "\"USER_BASKET\"";
+                    break;
+                }
                 default:
-                    System.out.println("Invalid location");
+                    System.out.println("Invalid location, please try again.");
             }
         }
         return location;

@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 //Опция меню для поиска книги в магазине или домашней библиотеке.
@@ -18,7 +19,18 @@ class MenuItemBookFinder extends QueryHelper implements MenuItem {
         title = userInputReader.askString("Enter title");
         author = surname + " " + name;
 
-        List<Book> found = storage.searchTableForBook(author, title, location, connection);
+
+        List<Book> found = new ArrayList<>();
+        if (location.equals("\"SHOP_DEPO\"") || location.equals("\"HOME_LIBRARY\"")) {
+            found = storage.searchTableForBook(author, title, location, connection);
+        } else {
+            for (Book b : Menu.currentUserBasket) {
+                if (b.getAuthor().toLowerCase().equals(author.toLowerCase())) {
+                    found.add(b);
+                }
+
+            }
+        }
         System.out.println(description());
 
         try {

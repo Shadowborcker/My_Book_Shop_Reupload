@@ -41,6 +41,7 @@ class MenuItemBasketHolder extends QueryHelper implements MenuItem {
                         b.setQuantity(quantity);
                         Menu.currentUserBasket.add(b);
                         System.out.println(b.getQuantity() + " book(s) added to your basket.");
+                        break;
                     }
                 }
 

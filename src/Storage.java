@@ -145,48 +145,49 @@ class Storage {
     }
 
     // Метод чтения книг из базы данных в список.
-    List<Book> readBooksFromTable(String table, int userId, Connection dbConnection, Connection dbConnectionTwo) throws SQLException {
+    List<Book> readBooksFromTable(String table, Connection dbConnection) throws SQLException {
         Statement statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
                 ResultSet.CONCUR_UPDATABLE);
-        Statement statementTwo = dbConnectionTwo.createStatement();
-        ResultSet resultSetOne;
-        ResultSet resultSetTwo;
-        List<Book> books;
-        if (table.equals("\"SHOP_DEPO\"")) {
-            resultSetOne = statement.executeQuery("SELECT * FROM " + table);
-            books = resultToBooksList(resultSetOne);
-        } else {
-            String sql = "SELECT bookId, quantity FROM \"HOME_LIBRARY\" WHERE userId = "
-                    + userId;
-            resultSetOne = statement.executeQuery(sql);
-            List<Integer> indexes = new ArrayList<>();
-            List<Integer> quantities = new ArrayList<>();
-            while (resultSetOne.next()) {
-                indexes.add(resultSetOne.getInt("bookId"));
-                quantities.add(resultSetOne.getInt("quantity"));
-            }
-            StringBuilder result = new StringBuilder();
-            for (Integer i : indexes) {
-                if (result.length() > 0) {
-                    result.append(", ");
+        ResultSet resultSet;
+        List<Book> books = new ArrayList<>();
+
+        switch (table) {
+            case ("\"SHOP_DEPO\""):
+                resultSet = statement.executeQuery("SELECT * FROM " + table);
+                books = resultToBooksList(resultSet);
+                break;
+            case ("\"HOME_LIBRARY\""):
+                String sql = "SELECT bookId, quantity FROM \"HOME_LIBRARY\" WHERE userId = "
+                        + Menu.currentUser.getId();
+                resultSet = statement.executeQuery(sql);
+                List<Integer> indexes = new ArrayList<>();
+                List<Integer> quantities = new ArrayList<>();
+                while (resultSet.next()) {
+                    indexes.add(resultSet.getInt("bookId"));
+                    quantities.add(resultSet.getInt("quantity"));
                 }
-                result.append(i);
-            }
-            sql = "SELECT * FROM \"SHOP_DEPO\" WHERE id IN (" +
-                    result + ")";
-            resultSetTwo = statementTwo.executeQuery(sql);
-            books = resultToBooksList(resultSetTwo);
-//            resultSetOne.beforeFirst();
-            int i = 0;
-            for (Book b : books) {
-//                while (resultSetOne.next()) {
+                StringBuilder result = new StringBuilder();
+                for (Integer i : indexes) {
+                    if (result.length() > 0) {
+                        result.append(", ");
+                    }
+                    result.append(i);
+                }
+                sql = "SELECT * FROM \"SHOP_DEPO\" WHERE id IN (" +
+                        result + ")";
+                resultSet = statement.executeQuery(sql);
+                books = resultToBooksList(resultSet);
+
+                int i = 0;
+                for (Book b : books) {
+
                     b.setQuantity(quantities.get(i));
                     i++;
-//                }
-            }
+                }
+                break;
         }
+
         statement.close();
-        statementTwo.close();
 
         return books;
     }
@@ -257,13 +258,49 @@ class Storage {
 
     //Метод получения отсортированного списка книг из базы данных.
     List<Book> sortBooksInTable(String criteria, String table, Connection dbConnection) throws SQLException {
-        List<Book> books;
+        List<Book> books = new ArrayList<>();
         Statement statement = dbConnection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM " + table + " ORDER BY " +
-                concatenate(criteria) + " DESC");
-        books = resultToBooksList(resultSet);
-        resultSet.close();
-        statement.close();
+        ResultSet resultSet;
+        switch (table) {
+            case ("\"SHOP_DEPO\""): {
+                String sql = "SELECT * FROM " + table + " ORDER BY " +
+                        criteria + " ASC";
+                resultSet = statement.executeQuery(sql);
+                books = resultToBooksList(resultSet);
+                break;
+            }
+
+            case ("\"HOME_LIBRARY\""): {
+                String sql = "SELECT bookId, quantity FROM \"HOME_LIBRARY\" WHERE userId = "
+                        + Menu.currentUser.getId();
+                resultSet = statement.executeQuery(sql);
+                List<Integer> indexes = new ArrayList<>();
+                List<Integer> quantities = new ArrayList<>();
+                while (resultSet.next()) {
+                    indexes.add(resultSet.getInt("bookId"));
+                    quantities.add(resultSet.getInt("quantity"));
+                }
+                StringBuilder result = new StringBuilder();
+                for (Integer i : indexes) {
+                    if (result.length() > 0) {
+                        result.append(", ");
+                    }
+                    result.append(i);
+                }
+                sql = "SELECT * FROM \"SHOP_DEPO\" WHERE id IN (" +
+                        result + ")";
+                resultSet = statement.executeQuery(sql);
+                books = resultToBooksList(resultSet);
+
+                int i = 0;
+                for (Book b : books) {
+
+                    b.setQuantity(quantities.get(i));
+                    i++;
+                }
+                break;
+            }
+        }
 
         return books;
     }
@@ -271,12 +308,65 @@ class Storage {
     //Метод поиска книги в базе данных
     List<Book> searchTableForBook(String author, String title, String table, Connection dbConnection)
             throws SQLException {
-        List<Book> found;
+        List<Book> found = new ArrayList<>();
         Statement statement = dbConnection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM " + table +
-                " WHERE LOWER(author) = " + concatenate(author.toLowerCase()) + " AND LOWER(title) = " +
-                concatenate(title.toLowerCase()));
-        found = resultToBooksList(resultSet);
+        switch (table) {
+            case ("\"SHOP_DEPO\""): {
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM " + table +
+                        " WHERE LOWER(author) = " + concatenate(author.toLowerCase()) + " AND LOWER(title) = " +
+                        concatenate(title.toLowerCase()));
+                found = resultToBooksList(resultSet);
+                break;
+            }
+
+            case ("\"HOME_LIBRARY\""): {
+                List<Integer> bookIds = new ArrayList<>();
+                String sql = "SELECT * FROM \"SHOP_DEPO\" WHERE LOWER(author) = " +
+                        concatenate(author.toLowerCase()) + " AND LOWER(title) = " +
+                        concatenate(title.toLowerCase());
+                ResultSet resultSet = statement.executeQuery(sql);
+                while (resultSet.next()) {
+                    bookIds.add(resultSet.getInt("id"));
+                }
+                StringBuilder ids = new StringBuilder();
+                for (Integer i : bookIds) {
+                    if (ids.length() > 0) {
+                        ids.append(", ");
+                    }
+                    ids.append(i);
+                }
+                sql = "SELECT bookId, quantity FROM \"HOME_LIBRARY\" WHERE userId = "
+                        + Menu.currentUser.getId() + " AND bookId IN (" +
+                        ids + ")";
+                resultSet = statement.executeQuery(sql);
+
+                List<Integer> indexes = new ArrayList<>();
+                List<Integer> quantities = new ArrayList<>();
+                while (resultSet.next()) {
+                    indexes.add(resultSet.getInt("bookId"));
+                    quantities.add(resultSet.getInt("quantity"));
+                }
+                StringBuilder idsTwo = new StringBuilder();
+                for (Integer i : indexes) {
+                    if (idsTwo.length() > 0) {
+                        idsTwo.append(", ");
+                    }
+                    idsTwo.append(i);
+                }
+                sql = "SELECT * FROM \"SHOP_DEPO\" WHERE id IN (" +
+                        idsTwo + ")";
+                resultSet = statement.executeQuery(sql);
+                found = resultToBooksList(resultSet);
+
+                int i = 0;
+                for (Book b : found) {
+                    b.setQuantity(quantities.get(i));
+                    i++;
+                }
+                break;
+            }
+        }
+
         return found;
     }
 

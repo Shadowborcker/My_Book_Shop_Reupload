@@ -8,7 +8,7 @@ import java.util.List;
 class MenuItemBookRemover extends QueryHelper implements MenuItem {
 
     public String description() {
-        return "Removing books from a location specified.";
+        return "Removing books from store.";
     }
 
     public void select() throws IOException, SQLException {
@@ -17,7 +17,7 @@ class MenuItemBookRemover extends QueryHelper implements MenuItem {
         surname = userInputReader.askString("Enter author's surname");
         title = userInputReader.askString("Enter title");
         author = surname + " " + name;
-        String location = Menu.submenuLocation();
+        String location = "\"SHOP_DEPO\"";
         List<Book> found = new ArrayList<>();
         int index = 1;
 

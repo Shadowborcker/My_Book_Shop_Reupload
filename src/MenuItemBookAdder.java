@@ -8,13 +8,13 @@ import java.util.List;
 class MenuItemBookAdder extends QueryHelper implements MenuItem {
 
     public String description() {
-        return "Adding to books to specified location";
+        return "Adding to books to store";
     }
 
     public void select() throws IOException, SQLException {
         List<Book> books = new ArrayList<>();
         Book book = bookFactory.newBook();
-        String location = Menu.submenuLocation();
+        String location = "\"SHOP_DEPO\"";
         book.setQuantity(userInputReader.askInt("How many would you like to add?"));
         books.add(book);
         storage.addBookToTable(books, location, connection);
