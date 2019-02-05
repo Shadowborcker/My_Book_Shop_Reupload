@@ -24,7 +24,7 @@ public class UserInputReader {
         return string;
     }
     //Метод запроса целого числа
-    public int askInt(String s) {
+    int askInt(String s) {
         int i;
         System.out.println(s);
         while (true) {
@@ -41,7 +41,7 @@ public class UserInputReader {
         return i;
     }
     //Метод запроса дробного числа
-    public double askDouble(String s) {
+    double askDouble(String s) {
         double i;
         System.out.println(s);
         while (true) {
@@ -57,8 +57,8 @@ public class UserInputReader {
         }
         return i;
     }
-    //Метод запроса числа
-    public int askYear(String s) {
+    //Метод запроса года.
+    int askYear(String s) {
         int i;
         while (true) {
             try {

@@ -1,14 +1,12 @@
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 //Опция меню для сортировки книг в магазине или домашней библиотеке.
-class MenuItemBooksSorter extends QueryHelper implements MenuItem {
+class MenuItemBooksSorter extends MenuHelper implements MenuItem {
 
-    public List<Book> sortBooks(String criteria, List<Book> books) {
+    private List<Book> sortBooks(String criteria, List<Book> books) {
         switch (criteria) {
             case "author": {
                 books.sort(Comparator.comparing(Book::getAuthor));
@@ -46,7 +44,7 @@ class MenuItemBooksSorter extends QueryHelper implements MenuItem {
         return "Showing sorted books in specified location";
     }
 
-    public void select() throws IOException, SQLException {
+    public void select() throws SQLException {
         String criteria = Menu.submenuCriteria();
         String location = Menu.submenuLocation();
         List<Book> books = new ArrayList<>();
@@ -54,17 +52,17 @@ class MenuItemBooksSorter extends QueryHelper implements MenuItem {
 
         switch (location) {
             case ("\"SHOP_DEPO\""): {
-                books = storage.sortBooksInTable(criteria, location, connection);
+                books = storage.sortBooksInTable(criteria, location);
                 break;
             }
 
             case ("\"HOME_LIBRARY\""): {
-                books = sortBooks(criteria, storage.readBooksFromTable(location, connection));
+                books = sortBooks(criteria, storage.readBooksFromTable(location));
                 break;
 
             }
             case ("\"USER_BASKET\""): {
-                books = sortBooks(criteria, Menu.currentUserBasket);
+                books = sortBooks(criteria, currentUserBasket);
                 break;
             }
         }

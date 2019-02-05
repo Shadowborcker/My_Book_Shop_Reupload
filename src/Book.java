@@ -1,5 +1,3 @@
-import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 import java.text.DecimalFormat;
 
@@ -12,61 +10,37 @@ public class Book {
     private int pages;
     private double price;
     private int quantity;
-    int id;
+    private int id;
 
-    public String getAuthor() {
+    String getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getTitle() {
+    String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getPublisher() {
+    String getPublisher() {
         return publisher;
     }
 
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
-    }
-
-    public int getYear() {
+    int getYear() {
         return year;
     }
 
-    public void setYear(int year) {
-        this.year = year;
-    }
-
-    public int getPages() {
+    int getPages() {
         return pages;
     }
 
-    public void setPages(int pages) {
-        this.pages = pages;
-    }
-
-    public double getPrice() {
+    double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public int getQuantity() {
+    int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
@@ -117,13 +91,5 @@ public class Book {
         this.pages = pages;
         this.price = price;
     }
-
-/*    @Override
-    public int compareTo(Book b) {
-        if (getAuthor() == null || b.getAuthor() == null) {
-            return 0;
-        }
-        return getAuthor().compareTo(b.getAuthor());
-    }*/
 
 }

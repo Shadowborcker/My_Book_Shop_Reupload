@@ -1,11 +1,8 @@
-import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 //Опция меню для просмотра заказов пользователя.
-class MenuItemOrdersDisplay extends QueryHelper implements MenuItem {
+class MenuItemOrdersDisplay extends MenuHelper implements MenuItem {
 
     List<Order> orders;
 
@@ -16,14 +13,14 @@ class MenuItemOrdersDisplay extends QueryHelper implements MenuItem {
     public void select() {
         String login = userInputReader.askString("Enter user's login to look for his orders list.");
         try {
-            storage.readUserFromTable(login, connection);
+            storage.readUserFromTable(login);
         } catch (SQLException e) {
             System.out.println("No matching login found in database.");
         }
 
         try {
             System.out.println(description());
-            orders = storage.readOrdersFromTable(login, connection);
+            orders = storage.readOrdersFromTable(login);
             int i = 1;
             for (Order order : orders) {
                 System.out.println(i + ". " + order);

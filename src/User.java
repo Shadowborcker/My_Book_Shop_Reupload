@@ -2,47 +2,42 @@ import java.util.Objects;
 
 public class User {
 
-    int id;
+    private int id;
     private String login;
     private String password;
-    private double money = 12000.00;
+    private double money;
 
-    public void setLogin(String login) {
-        this.login = login;
-    }
 
-    public void setPassword(String password) {
+    void setPassword(String password) {
         this.password = password;
     }
 
-    public void setMoney(double money) {
+    void setMoney(double money) {
         this.money = money;
     }
 
-    public String getLogin() {
+    String getLogin() {
         return login;
     }
 
-    public String getPassword() {
+    String getPassword() {
         return password;
     }
 
-    public double getMoney() {
+    double getMoney() {
         return money;
     }
 
-    public int getId() {
+    int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    void setId(int id) {
         this.id = id;
     }
 
-    public User(String login/*, String password, double money*/) {
+    User(String login) {
         this.login = login;
-/*        this.password = password;
-        this.money = money;*/
     }
 
     @Override

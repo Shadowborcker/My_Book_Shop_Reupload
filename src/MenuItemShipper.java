@@ -1,7 +1,7 @@
 import java.sql.SQLException;
 import java.util.List;
 
-public class MenuItemShipper extends QueryHelper implements MenuItem {
+public class MenuItemShipper extends MenuHelper implements MenuItem {
 
     private List<Order> orders;
     private int i = 1;
@@ -14,13 +14,13 @@ public class MenuItemShipper extends QueryHelper implements MenuItem {
         Order orderToShip;
         String login = userInputReader.askString("Enter user's login to look for his orders list.");
         try {
-            storage.readUserFromTable(login, connection);
+            storage.readUserFromTable(login);
         } catch (SQLException e) {
             System.out.println("No matching login found in database.");
         }
 
         try {
-            orders = storage.readOrdersFromTable(login, connection);
+            orders = storage.readOrdersFromTable(login);
 
             for (Order order : orders) {
                 System.out.println(i + ". " + order);
@@ -31,7 +31,7 @@ public class MenuItemShipper extends QueryHelper implements MenuItem {
         }
 
         orderToShip = orders.get(userInputReader.askInt("Choose order to ship"));
-//        storage.sipOrder(orderToShip);
+//        storage.shipOrder(orderToShip);
 
 
     }

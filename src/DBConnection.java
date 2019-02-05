@@ -1,16 +1,20 @@
-
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
 class DBConnection {
 
-    static UserInputReader userInputReader = new UserInputReader();
-    static String user = userInputReader.askString("Enter user name");
-    static String password = userInputReader.askString("Enter password");
+    static {
+        System.out.println("Application uses PostgreSQL to store it's data. \n" +
+                "We require your PostgreSQL username and password to establish a" +
+                " connection with local PostgreSQL server");
+    }
 
+    private static String user = Main.getUserInputReader().askString("Enter user name");
+    private static String password = Main.getUserInputReader().askString("Enter password");
 
     Connection serverConnect() {
+
+
         Connection connection = null;
         try {
 
@@ -27,6 +31,7 @@ class DBConnection {
     }
 
     Connection dbConnect() {
+
         Connection connection = null;
         try {
             connection = DriverManager

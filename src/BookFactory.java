@@ -1,9 +1,8 @@
-import java.io.IOException;
 
-public class BookFactory {
-    UserInputReader reader = new UserInputReader();
+class BookFactory {
+    private UserInputReader reader = new UserInputReader();
 
-    public Book newBook() throws IOException {
+    Book newBook() {
 
         String name = reader.askString("Enter author's name");
         String surname = reader.askString("Enter author's surname");

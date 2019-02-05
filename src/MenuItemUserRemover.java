@@ -1,22 +1,25 @@
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
 //Опция меню для удаления пользователя из базы данных.
-class MenuItemUserRemover extends QueryHelper implements MenuItem {
+class MenuItemUserRemover extends MenuHelper implements MenuItem {
 
     public String description() {
         return "Removing user from database.";
     }
 
-    public void select() throws IOException {
+    public void select() {
         String login;
         boolean isPaid = false;
         while (true) {
             login = userInputReader.askString("Enter user's login to remove.");
+            if (login.toLowerCase().equals(currentUser.getLogin().toLowerCase())) {
+                System.out.println("Unable to remove current User from database.");
+                return;
+            }
             List<Order> orderList;
             try {
-                orderList = storage.readOrdersFromTable(login, connection);
+                orderList = storage.readOrdersFromTable(login);
                 for (Order order : orderList
                 ) {
                     if (order.getIsPaid()) {
@@ -27,7 +30,7 @@ class MenuItemUserRemover extends QueryHelper implements MenuItem {
                     if (!orderList.isEmpty()) {
                         try {
                             System.out.println("Removing user's orders from database.");
-                            storage.removeUsersOrdersFromTables(login, connection);
+                            storage.removeUsersOrdersFromTables(login);
                             System.out.println("User's orders removed");
                         } catch (SQLException e) {
                             System.out.println("Unable to remove user's orders.");
@@ -36,7 +39,7 @@ class MenuItemUserRemover extends QueryHelper implements MenuItem {
 
                     try {
                         System.out.println(description());
-                        storage.removeUserFromTable(login, connection);
+                        storage.removeUserFromTable(login);
                         System.out.println("User removed");
                     } catch (SQLException e) {
                         System.out.println("No such user in database, Sir.");

@@ -1,21 +1,14 @@
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class Menu {
 
-    static List<Book> currentUserBasket = new ArrayList<>();
-    static User currentUser;
+    private UserInputReader userInputReader = Main.getUserInputReader();
+    private Storage storage = Main.getStorage();
 
+    void greetingsMenu() {
 
-    void greetingsMenu() throws IOException {
-        UserInputReader userInputReader = new UserInputReader();
-        DBConnection dbConnection = new DBConnection();
-        Connection connection = dbConnection.dbConnect();
-        Storage storage = new Storage();
         String choice = userInputReader.askString("Please sign up or login to existing account\n" +
                 "Sign up\\Log in");
         if (choice.toLowerCase().equals("sign up")) {
@@ -23,11 +16,13 @@ public class Menu {
                 String login = userInputReader.askString("Please enter desired login");
                 String password = userInputReader.askString("Please enter new password");
                 double money = userInputReader.askDouble("Please enter your balance");
-                currentUser = new User(login);
+                Main.setCurrentUser(new User(login));
+                User currentUser = Main.getCurrentUser();
                 currentUser.setPassword(password);
                 currentUser.setMoney(money);
                 try {
-                    storage.addUserToTable(currentUser, connection);
+                    storage.addUserToTable(currentUser);
+                    Main.setCurrentUser(currentUser);
                     break;
                 } catch (SQLException e) {
                     System.out.println("This login is already preoccupied.");
@@ -39,20 +34,19 @@ public class Menu {
                 String login = userInputReader.askString("Please enter login");
                 String password = userInputReader.askString("Enter password for " + login);
                 try {
-                    tempUser = storage.readUserFromTable(login, connection);
+                    tempUser = storage.readUserFromTable(login);
                     if (tempUser.getPassword().equals(password)) {
-                        currentUser = tempUser;
+                        Main.setCurrentUser(tempUser);
                         break;
-                    }
-                    else System.out.println("Invalid login\\password combination try again");
+                    } else System.out.println("Invalid login\\password combination try again");
                 } catch (SQLException e) {
                     System.out.println("No user found with matching login.");
                 }
             }
         }
 
-        System.out.println("Hello, " + currentUser.getLogin() + " , your balance is "
-                + currentUser.getMoney() + "Rub." + ", how may I be of service?\n" +
+        System.out.println("Hello, " + Main.getCurrentUser().getLogin() + " , your balance is "
+                + Main.getCurrentUser().getMoney() + "Rub." + ", how may I be of service?\n" +
                 "Use \"Show menu\" for commands list.");
     }
 
@@ -61,16 +55,16 @@ public class Menu {
         menumap.put("show menu", new MenuItemMenuDisplay()); //Tested
         menumap.put("remove user", new MenuItemUserRemover());
         menumap.put("show books", new MenuItemBooksDisplay()); //Tested
-        menumap.put("add book", new MenuItemBookAdder());
-        menumap.put("remove book", new MenuItemBookRemover());
+        menumap.put("add book", new MenuItemBookAdder()); //Tested
+        menumap.put("remove book", new MenuItemBookRemover()); //Tested
         menumap.put("sort", new MenuItemBooksSorter()); // Tested
         menumap.put("search", new MenuItemBookFinder());
-        menumap.put("move to basket", new MenuItemBasketHolder()); //Tested
-        menumap.put("remove from basket", new MenuItemBasketCleaner());
-        menumap.put("create order", new MenuItemOrderAdder());
+        menumap.put("buy", new MenuItemBasketHandler()); //Tested
+        menumap.put("clear basket", new MenuItemBasketCleaner());
+        menumap.put("order", new MenuItemOrderAdder());
         menumap.put("show orders", new MenuItemOrdersDisplay());
         menumap.put("remove order", new MenuItemOrderRemover());
-        menumap.put("checkout", new MenuItemCheckOut());
+        menumap.put("pay", new MenuItemPayer());
         menumap.put("ship", new MenuItemShipper());
         menumap.put("exit", new MenuItemExit());
 
@@ -86,7 +80,7 @@ public class Menu {
     }
 
 
-    static String submenuLocation() throws IOException {
+    static String submenuLocation() {
         String location = null;
         UserInputReader userInputReader = new UserInputReader();
         while (location == null) {
@@ -113,7 +107,7 @@ public class Menu {
         return location;
     }
 
-    static String submenuCriteria() throws IOException {
+    static String submenuCriteria() {
         String criteria = null;
         UserInputReader userInputReader = new UserInputReader();
         while (criteria == null) {
