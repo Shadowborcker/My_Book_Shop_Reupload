@@ -410,7 +410,6 @@ class Storage extends MenuHelper {
     //Метод размещения заказа в базе данных.
     void addOrderToTable(Order order) throws SQLException {
         List<Book> books = order.getBooks();
-        String login = order.getUser().getLogin();
         Statement statement = dbConnection.createStatement();
         String addOrder = "INSERT INTO \"ORDERS\" (userId, sum, isPaid) " +
                 "VALUES (?, ?, ?)";
@@ -508,25 +507,60 @@ class Storage extends MenuHelper {
         Order order;
         List<Order> orders = new ArrayList<>();
         List<Book> books;
-        Statement statement = dbConnection.createStatement();
-        ResultSet resultSetUsers = statement.executeQuery("SELECT * FROM \"USERS\" WHERE (login) =" +
-                concatenate(login));
-        ResultSet resultSetOrders = statement.executeQuery("SELECT * FROM \"ORDERS\" WHERE (userId) =" +
-                resultSetUsers.getInt("id"));
-        ResultSet resultSetPositions;
-        ResultSet booksOrdered;
+        List<Integer> ordersIds = new ArrayList<>();
+        List<Integer> booksIds = new ArrayList<>();
 
-        while (resultSetOrders.next()) {
-            resultSetPositions = statement.executeQuery("SELECT * FROM \"ORDERS_POSITIONS\" " +
-                    "WHERE (orderId) =" + resultSetOrders.getInt("id"));
-            booksOrdered = statement.executeQuery("SELECT * FROM \"SHOP_DEPO\" " +
-                    "WHERE (id) =" + resultSetPositions.getInt("bookId"));
-            books = resultToBooksList(booksOrdered);
-            User user = new User(login);
-            order = new Order(user, books);
-            order.setId(resultSetOrders.getInt("id"));
-            orders.add(order);
+        Statement statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_UPDATABLE);
+
+        String sql = "SELECT * FROM \"USERS\" WHERE (login) =" +
+                concatenate(login);
+        ResultSet resultSet = statement.executeQuery(sql);
+        resultSet.next();
+        int userId = resultSet.getInt("id");
+        sql = "SELECT * FROM \"ORDERS\" WHERE (userId) =" +
+                userId;
+        resultSet = statement.executeQuery(sql);
+
+        while (resultSet.next()) {
+            ordersIds.add(resultSet.getInt("id"));
         }
+        resultSet.beforeFirst();
+
+
+        StringBuilder result = new StringBuilder();
+        for (Integer i : ordersIds) {
+            if (result.length() > 0) {
+                result.append(", ");
+            }
+            result.append(i);
+        }
+
+        sql = "SELECT * FROM \"ORDERS_POSITIONS\" " +
+                "WHERE orderId IN (" + result + ")";
+        resultSet = statement.executeQuery(sql);
+
+        while (resultSet.next()) {
+            booksIds.add(resultSet.getInt("bookId"));
+        }
+
+
+        result = new StringBuilder();
+        for (Integer i : booksIds) {
+            if (result.length() > 0) {
+                result.append(", ");
+            }
+            result.append(i);
+        }
+        sql = "SELECT * FROM \"SHOP_DEPO\" WHERE id IN (" +
+                result + ")";
+        resultSet = statement.executeQuery(sql);
+        User user = readUserFromTable(login);
+        books = resultToBooksList(resultSet);
+        order = new Order(user, books);
+        order.setId(resultSetOrders.getInt("id"));
+        orders.add(order);
+
         resultSetOrders.close();
         statement.close();
 

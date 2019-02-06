@@ -66,14 +66,14 @@ public class Order {
         return status;
     }
 
-//    @Override
-//    public String toString() {
-//        DecimalFormat numberFormat = new DecimalFormat("#.00");
-//        return "Order{" +
-//                "order's owner: " + user.getLogin() + "\n" +
-//                "ordered positions: \n" + bookListToString(books) + "\n" +
-//                "order " + isPaidToString(isPaid) + "\n" +
-//                "for a total sum of" + numberFormat.format(sum) + "RUB" +
-//                '}';
-//    }
+    @Override
+    public String toString() {
+        DecimalFormat numberFormat = new DecimalFormat("#.00");
+        return "Order{" +
+                "order's owner: " + user.getLogin() + "\n" +
+                "ordered positions: \n" + bookListToString(books) + "\n" +
+                "order " + isPaidToString(isPaid) + "\n" +
+                "for a total sum of" + numberFormat.format(sum) + "RUB" +
+                '}';
+    }
 }

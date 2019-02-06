@@ -1,4 +1,3 @@
-import java.sql.Connection;
 import java.util.List;
 
 public class MenuHelper {
