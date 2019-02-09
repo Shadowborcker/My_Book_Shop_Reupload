@@ -7,7 +7,7 @@ class MenuItemOrdersDisplay extends MenuHelper implements MenuItem {
     List<Order> orders;
 
     public String description() {
-        return "Showing current users's orders.";
+        return "Showing users's orders.";
     }
 
     public void select() {
@@ -27,7 +27,7 @@ class MenuItemOrdersDisplay extends MenuHelper implements MenuItem {
                 i++;
             }
         } catch (SQLException e) {
-            System.out.println("Current user has no active orders.");
+            System.out.println("User has no active orders.");
         }
     }
 }

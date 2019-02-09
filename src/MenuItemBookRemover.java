@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ class MenuItemBookRemover extends MenuHelper implements MenuItem {
         title = userInputReader.askString("Enter title");
         author = surname + " " + name;
         String location = "\"SHOP_DEPO\"";
-        List<Book> found = new ArrayList<>();
+        List<Book> found;
         int index = 1;
 
         try {
@@ -26,8 +27,9 @@ class MenuItemBookRemover extends MenuHelper implements MenuItem {
                 System.out.println(index + "." + book);
                 index++;
             }
-        } catch (NullPointerException e) {
+        } catch (IOException e) {
             System.out.println("We did not find any books matching your criteria.");
+            return;
         }
         Book book;
         int choice;

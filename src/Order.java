@@ -37,6 +37,10 @@ public class Order {
         return sum;
     }
 
+    public void setSum(double sum) {
+        this.sum = sum;
+    }
+
     int getId() {
         return id;
     }
@@ -70,10 +74,10 @@ public class Order {
     public String toString() {
         DecimalFormat numberFormat = new DecimalFormat("#.00");
         return "Order{" +
-                "order's owner: " + user.getLogin() + "\n" +
-                "ordered positions: \n" + bookListToString(books) + "\n" +
-                "order " + isPaidToString(isPaid) + "\n" +
-                "for a total sum of" + numberFormat.format(sum) + "RUB" +
+                "order's owner: " + this.getUser().getLogin() + "\n" +
+                "ordered positions: \n" + bookListToString(this.getBooks()) + "\n" +
+                "for a total sum of " + numberFormat.format(this.getSum()) + " RUB" + "\n" +
+                "order " + isPaidToString(this.getIsPaid()) + "\n" +
                 '}';
     }
 }

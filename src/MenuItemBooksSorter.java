@@ -45,6 +45,7 @@ class MenuItemBooksSorter extends MenuHelper implements MenuItem {
     }
 
     public void select() throws SQLException {
+        List<Book> currentUserBasket = Main.getCurrentUserBasket();
         String criteria = Menu.submenuCriteria();
         String location = Menu.submenuLocation();
         List<Book> books = new ArrayList<>();

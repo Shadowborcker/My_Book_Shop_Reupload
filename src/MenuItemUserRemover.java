@@ -9,6 +9,7 @@ class MenuItemUserRemover extends MenuHelper implements MenuItem {
     }
 
     public void select() {
+        User currentUser = Main.getCurrentUser();
         String login;
         boolean isPaid = false;
         while (true) {

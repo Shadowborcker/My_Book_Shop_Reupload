@@ -58,11 +58,11 @@ public class Menu {
         menumap.put("add book", new MenuItemBookAdder()); //Tested
         menumap.put("remove book", new MenuItemBookRemover()); //Tested
         menumap.put("sort", new MenuItemBooksSorter()); // Tested
-        menumap.put("search", new MenuItemBookFinder());
+        menumap.put("search", new MenuItemBookFinder()); // Tested
         menumap.put("buy", new MenuItemBasketHandler()); //Tested
-        menumap.put("clear basket", new MenuItemBasketCleaner());
-        menumap.put("order", new MenuItemOrderAdder());
-        menumap.put("show orders", new MenuItemOrdersDisplay());
+        menumap.put("clear basket", new MenuItemBasketCleaner()); // Tested
+        menumap.put("order", new MenuItemOrderAdder()); // Tested
+        menumap.put("show orders", new MenuItemOrdersDisplay()); // Tested
         menumap.put("remove order", new MenuItemOrderRemover());
         menumap.put("pay", new MenuItemPayer());
         menumap.put("ship", new MenuItemShipper());

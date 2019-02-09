@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -9,7 +10,8 @@ class MenuItemBasketHandler extends MenuHelper implements MenuItem {
     }
 
     public void select() {
-        int quantity = 0;
+        List<Book> currentUserBasket = Main.getCurrentUserBasket();
+        int quantity;
         String location;
         Book bookToMove;
         List<Book> booksToMove;
@@ -35,27 +37,27 @@ class MenuItemBasketHandler extends MenuHelper implements MenuItem {
                 if (choice != 0 | choice < (booksToMove.size() - 1)) {
                     bookToMove = booksToMove.get(choice - 1);
                     break;
-                }
-                else {
+                } else {
                     System.out.println("Wrong index.");
                 }
             }
             while (true) {
-                    quantity = userInputReader.askInt("How many would you like, Sir?");
-                    if (quantity <= bookToMove.getQuantity()){
-                        bookToMove.setQuantity(quantity);
-                        break;
-                    }
-                    else
-                        System.out.println("There is not enough books in store," +
-                                " Sir, set another quantity.");
-                }
-                bookToMove.setQuantity(quantity);
-                currentUserBasket.add(bookToMove);
-                System.out.println(bookToMove.getQuantity() + " book(s) added to your basket.");
+                quantity = userInputReader.askInt("How many would you like, Sir?");
+                if (quantity <= bookToMove.getQuantity()) {
+                    bookToMove.setQuantity(quantity);
+                    break;
+                } else
+                    System.out.println("There is not enough books in store," +
+                            " Sir, set another quantity.");
+            }
+            bookToMove.setQuantity(quantity);
+            currentUserBasket.add(bookToMove);
+            System.out.println(bookToMove.getQuantity() + " book(s) added to your basket.");
 
         } catch (SQLException e) {
-            System.out.println("No such book, sir.");
+            System.out.println("We could not add the book to your basket.");
+        } catch (IOException e) {
+            System.out.println("No books found matching your criteria.");
         }
 
     }

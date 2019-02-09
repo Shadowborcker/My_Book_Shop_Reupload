@@ -10,6 +10,7 @@ public class MenuItemPayer extends MenuHelper implements MenuItem {
     }
 
     public void select() {
+        User currentUser = Main.getCurrentUser();
         DecimalFormat numberFormat = new DecimalFormat("#.00");
         String login = currentUser.getLogin();
         try {
@@ -33,6 +34,7 @@ public class MenuItemPayer extends MenuHelper implements MenuItem {
             }
             if (allPaid) {
                 System.out.println("You have no unpaid orders, Sir");
+                return;
             }
         } catch (SQLException e) {
             System.out.println("You have no active orders.");

@@ -1,15 +1,24 @@
+import javafx.util.Pair;
+
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 class Storage extends MenuHelper {
 
     private static DBConnection dbc = new DBConnection();
     private static Connection serverConnection = dbc.serverConnect();
     private static Connection dbConnection = dbc.dbConnect();
+    private User currentUser = Main.getCurrentUser();
 
     //Метод подготовки строки к использованию в  SQL запросе.
     private String concatenate(String str) {
+
+        String regex = "'";
+        str = str.replaceAll(regex, "''");
         str = "'" + str + "'";
         return str;
     }
@@ -308,22 +317,24 @@ class Storage extends MenuHelper {
     }
 
     //Метод поиска книги в базе данных
-    List<Book> searchTableForBook(String author, String title, String table)
-            throws SQLException {
+    List<Book> searchTableForBook(String author, String title, String table) throws SQLException, IOException {
         List<Book> found = new ArrayList<>();
         Statement statement = dbConnection.createStatement();
+        String sql;
+
         switch (table) {
             case ("\"SHOP_DEPO\""): {
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM " + table +
+                sql = "SELECT * FROM " + table +
                         " WHERE LOWER(author) = " + concatenate(author.toLowerCase()) + " AND LOWER(title) = " +
-                        concatenate(title.toLowerCase()));
+                        concatenate(title.toLowerCase());
+                ResultSet resultSet = statement.executeQuery(sql);
                 found = resultToBooksList(resultSet);
                 break;
             }
 
             case ("\"HOME_LIBRARY\""): {
                 List<Integer> bookIds = new ArrayList<>();
-                String sql = "SELECT * FROM \"SHOP_DEPO\" WHERE LOWER(author) = " +
+                sql = "SELECT * FROM \"SHOP_DEPO\" WHERE LOWER(author) = " +
                         concatenate(author.toLowerCase()) + " AND LOWER(title) = " +
                         concatenate(title.toLowerCase());
                 ResultSet resultSet = statement.executeQuery(sql);
@@ -368,7 +379,9 @@ class Storage extends MenuHelper {
                 break;
             }
         }
-
+        if (found.size() == 0) {
+            throw new IOException();
+        }
         return found;
     }
 
@@ -412,12 +425,15 @@ class Storage extends MenuHelper {
         List<Book> books = order.getBooks();
         Statement statement = dbConnection.createStatement();
         String addOrder = "INSERT INTO \"ORDERS\" (userId, sum, isPaid) " +
-                "VALUES (?, ?, ?)";
-        PreparedStatement preparedStatement = dbConnection.prepareStatement(addOrder);
+                "VALUES (?, ?, ?) RETURNING id";
+        PreparedStatement preparedStatement = dbConnection.prepareStatement(addOrder, Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setInt(1, order.getUser().getId());
         preparedStatement.setDouble(2, order.getSum());
         preparedStatement.setBoolean(3, false);
         preparedStatement.executeUpdate();
+        ResultSet resultSet = preparedStatement.getGeneratedKeys();
+        resultSet.next();
+        int orderId = resultSet.getInt(1);
 
         for (Book book : books) {
             String sql = "SELECT * FROM \"SHOP_DEPO\" WHERE author ="
@@ -427,7 +443,7 @@ class Storage extends MenuHelper {
                     " AND year =" + book.getYear() +
                     " AND pages =" + book.getPages() +
                     " AND price =" + book.getPrice();
-            ResultSet resultSet = statement.executeQuery(sql);
+            resultSet = statement.executeQuery(sql);
             resultSet.next();
             int bookId = resultSet.getInt("id");
             int quantity = resultSet.getInt("quantity");
@@ -437,14 +453,11 @@ class Storage extends MenuHelper {
                 System.out.println("Not enough books in shop depository");
                 throw new SQLException();
             }
-            resultSet = statement.executeQuery("SELECT * FROM \"ORDERS\" WHERE" +
-                    " (userId) =" + order.getUser().getId());
-            resultSet.next();
 
             String addBookId = "INSERT INTO \"ORDERS_POSITIONS\" (orderId, bookId, quantity) " +
                     "VALUES (?, ?, ?)";
             PreparedStatement addOrderPositionsStatement = dbConnection.prepareStatement(addBookId);
-            addOrderPositionsStatement.setInt(1, resultSet.getInt("id"));
+            addOrderPositionsStatement.setInt(1, orderId);
             addOrderPositionsStatement.setInt(2, bookId);
             addOrderPositionsStatement.setInt(3, book.getQuantity());
             addOrderPositionsStatement.executeUpdate();
@@ -504,11 +517,13 @@ class Storage extends MenuHelper {
 
     // Метод чтения заказов пользователя из базы данных в список.
     List<Order> readOrdersFromTable(String login) throws SQLException {
-        Order order;
+
         List<Order> orders = new ArrayList<>();
         List<Book> books;
-        List<Integer> ordersIds = new ArrayList<>();
         List<Integer> booksIds = new ArrayList<>();
+        Map<Integer, Pair<Double, Boolean>> idsAndStatus = new HashMap<>();
+        User user = readUserFromTable(login);
+        Order order;
 
         Statement statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
                 ResultSet.CONCUR_UPDATABLE);
@@ -522,57 +537,65 @@ class Storage extends MenuHelper {
                 userId;
         resultSet = statement.executeQuery(sql);
 
+
         while (resultSet.next()) {
-            ordersIds.add(resultSet.getInt("id"));
+            Pair<Double, Boolean> sumsAndIsPaid = new Pair<>(resultSet.getDouble("sum"),
+                    resultSet.getBoolean("isPaid"));
+            idsAndStatus.put(resultSet.getInt("id"), sumsAndIsPaid);
         }
         resultSet.beforeFirst();
 
 
-        StringBuilder result = new StringBuilder();
-        for (Integer i : ordersIds) {
-            if (result.length() > 0) {
-                result.append(", ");
+        for (Integer i : idsAndStatus.keySet()) {
+            sql = "SELECT * FROM \"ORDERS_POSITIONS\" " +
+                    "WHERE orderId = " + i;
+            resultSet = statement.executeQuery(sql);
+
+            List<Integer> quantities = new ArrayList<>();
+
+            while (resultSet.next()) {
+                quantities.add(resultSet.getInt("quantity"));
             }
-            result.append(i);
-        }
 
-        sql = "SELECT * FROM \"ORDERS_POSITIONS\" " +
-                "WHERE orderId IN (" + result + ")";
-        resultSet = statement.executeQuery(sql);
+            resultSet.beforeFirst();
 
-        while (resultSet.next()) {
-            booksIds.add(resultSet.getInt("bookId"));
-        }
-
-
-        result = new StringBuilder();
-        for (Integer i : booksIds) {
-            if (result.length() > 0) {
-                result.append(", ");
+            while (resultSet.next()) {
+                booksIds.add(resultSet.getInt("bookId"));
             }
-            result.append(i);
-        }
-        sql = "SELECT * FROM \"SHOP_DEPO\" WHERE id IN (" +
-                result + ")";
-        resultSet = statement.executeQuery(sql);
-        User user = readUserFromTable(login);
-        books = resultToBooksList(resultSet);
-        order = new Order(user, books);
-        order.setId(resultSetOrders.getInt("id"));
-        orders.add(order);
 
-        resultSetOrders.close();
+            StringBuilder result = new StringBuilder();
+            for (Integer b : booksIds) {
+                if (result.length() > 0) {
+                    result.append(", ");
+                }
+                result.append(b);
+            }
+
+            sql = "SELECT * FROM \"SHOP_DEPO\" WHERE id IN (" +
+                    result + ")";
+            resultSet = statement.executeQuery(sql);
+            books = resultToBooksList(resultSet);
+            int j = 0;
+            for (Book b : books) {
+                b.setQuantity(quantities.get(j));
+                j++;
+            }
+            order = new Order(user, books);
+            order.setId(i);
+            order.setSum(idsAndStatus.get(i).getKey());
+            order.setPaid(idsAndStatus.get(i).getValue());
+            orders.add(order);
+            booksIds.clear();
+        }
+
+        resultSet.close();
         statement.close();
-
         return orders;
     }
 
     //Метод оплаты заказа текущего юзера.
     void payForOrder(Order order) throws SQLException {
         Statement statement = dbConnection.createStatement();
-        ResultSet resultSetUsers = statement.executeQuery("SELECT * FROM \"USERS\" WHERE (login) =" +
-                concatenate(order.getUser().getLogin()));
-
         String updateIsPaid = "UPDATE \"ORDERS\" SET isPaid = true WHERE (id) =" + order.getId();
         statement.executeUpdate(updateIsPaid);
     }

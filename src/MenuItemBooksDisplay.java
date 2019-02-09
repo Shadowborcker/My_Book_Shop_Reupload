@@ -11,6 +11,7 @@ class MenuItemBooksDisplay extends MenuHelper implements MenuItem {
     }
 
     public void select() {
+        List<Book> currentUserBasket = Main.getCurrentUserBasket();
 
         String location = Menu.submenuLocation();
         List<Book> books;
