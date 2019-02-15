@@ -16,12 +16,11 @@ public class Main {
     private static BookFactory bookFactory = new BookFactory();
     private static Storage storage = new Storage();
 
-
-    public static List<Book> getCurrentUserBasket() {
+    static List<Book> getCurrentUserBasket() {
         return currentUserBasket;
     }
 
-    public static User getCurrentUser() {
+    static User getCurrentUser() {
         return currentUser;
     }
 
@@ -29,11 +28,7 @@ public class Main {
         return userInputReader;
     }
 
-//    public static DBConnection getDbc() {
-//        return dbc;
-//    }
-
-    public static BookFactory getBookFactory() {
+    static BookFactory getBookFactory() {
         return bookFactory;
     }
 
@@ -41,15 +36,7 @@ public class Main {
         return storage;
     }
 
-//    public static Connection getDbConnection() {
-//        return dbConnection;
-//    }
-//
-//    public static Connection getServerConnection() {
-//        return serverConnection;
-//    }
-
-    public static void setCurrentUser(User currentUser) {
+    static void setCurrentUser(User currentUser) {
         Main.currentUser = currentUser;
     }
 
@@ -60,13 +47,13 @@ public class Main {
 
         //Проверям наличие базы данных, в случае отсутствия создаём базу данных, создаём таблицы и заполняем их.
         try {
-            if (!storage.exists()) {
+            if (!storage.dbExists()) {
                 storage.createDatabase();
                 storage.createTables();
                 storage.fillTables();
             }
         } catch (SQLException e) {
-            System.out.println("Database BOOK_SHOP_PROJECT already exists.");
+            System.out.println("Database BOOK_SHOP_PROJECT already dbExists.");
         }
 
 

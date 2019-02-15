@@ -21,6 +21,9 @@ public class Menu {
                 currentUser.setPassword(password);
                 currentUser.setMoney(money);
                 try {
+                    if (storage.userExists(login)) {
+                        throw new SQLException();
+                    }
                     storage.addUserToTable(currentUser);
                     Main.setCurrentUser(currentUser);
                     break;

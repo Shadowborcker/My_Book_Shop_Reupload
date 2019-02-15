@@ -16,11 +16,16 @@ class MenuItemOrdersDisplay extends MenuHelper implements MenuItem {
             storage.readUserFromTable(login);
         } catch (SQLException e) {
             System.out.println("No matching login found in database.");
+            return;
         }
 
         try {
             System.out.println(description());
             orders = storage.readOrdersFromTable(login);
+            if (orders.size() == 0) {
+                System.out.println("User has no active orders.");
+                return;
+            }
             int i = 1;
             for (Order order : orders) {
                 System.out.println(i + ". " + order);

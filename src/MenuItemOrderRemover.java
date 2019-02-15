@@ -12,22 +12,31 @@ public class MenuItemOrderRemover extends MenuHelper implements MenuItem {
         MenuItemOrdersDisplay menuItemShowOrders = new MenuItemOrdersDisplay();
         menuItemShowOrders.select();
         int i;
+
         while (true) {
             i = userInputReader.askInt("Select order to remove");
-            Order orderToRemove = menuItemShowOrders.orders.get(i);
-            isPaid = orderToRemove.getIsPaid();
-            if (isPaid) {
-                System.out.println("The order you selected is paid for and cannot be removed.");
-            }
-            else {
-                try {
-                    storage.removeOrderFromTables(orderToRemove);
-                    break;
-                } catch (SQLException e) {
-                    System.out.println("Unable to remove order");
-                    e.printStackTrace();
+            if (i != 0 | i < (menuItemShowOrders.orders.size() - 1)) {
+                Order orderToRemove = menuItemShowOrders.orders.get(i-1);
+                isPaid = orderToRemove.getIsPaid();
+                if (isPaid) {
+                    System.out.println("The order you selected is paid for and cannot be removed.");
+                    return;
                 }
+                else {
+                    try {
+                        System.out.println(description());
+                        storage.removeOrderFromTables(orderToRemove);
+                        System.out.println("Order removed successfully.");
+                        break;
+                    } catch (SQLException e) {
+                        System.out.println("Unable to remove order");
+                        e.printStackTrace();
+                    }
+                }
+
             }
+            else System.out.println("No such order in list.");
+
         }
     }
 }

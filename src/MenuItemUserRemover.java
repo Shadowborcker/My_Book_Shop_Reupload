@@ -45,7 +45,10 @@ class MenuItemUserRemover extends MenuHelper implements MenuItem {
                     } catch (SQLException e) {
                         System.out.println("No such user in database, Sir.");
                     }
-                } else System.out.println("Specified user has paid orders and cannot be removed from database.");
+                } else {
+                    System.out.println("Specified user has paid orders and cannot be removed from database.");
+                    return;
+                }
             } catch (SQLException e) {
                 System.out.println("No orders found for " + login);
                 return;

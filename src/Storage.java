@@ -7,12 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class Storage extends MenuHelper {
+class Storage {
 
-    private static DBConnection dbc = new DBConnection();
-    private static Connection serverConnection = dbc.serverConnect();
-    private static Connection dbConnection = dbc.dbConnect();
-    private User currentUser = Main.getCurrentUser();
+    private DBConnection dbc = new DBConnection();
+    private Connection serverConnection = dbc.serverConnect();
+    private Connection dbConnection;
 
     //Метод подготовки строки к использованию в  SQL запросе.
     private String concatenate(String str) {
@@ -33,7 +32,7 @@ class Storage extends MenuHelper {
     }
 
     //Метод проверки наличия необходимой базы данных.
-    boolean exists() {
+    boolean dbExists() {
         boolean exists = true;
         try {
             String sql = "SELECT * FROM pg_catalog.pg_database WHERE datname = \"BOOK_SHOP_PROJECT\"";
@@ -41,6 +40,21 @@ class Storage extends MenuHelper {
             ResultSet resultSet = statement.executeQuery(sql);
             statement.close();
             resultSet.close();
+        } catch (SQLException e) {
+            exists = false;
+        }
+        return exists;
+    }
+
+    //Метод проверки наличия юзера с соответствующим логином.
+    boolean userExists(String login) {
+        boolean exists = true;
+        dbConnection = dbc.dbConnect();
+        try {
+            Statement statement = dbConnection.createStatement();
+            String sql = "SELECT * FROM \"USERS\" WHERE lower(login) ="
+                    + concatenate(login.toLowerCase());
+            statement.executeQuery(sql);
         } catch (SQLException e) {
             exists = false;
         }
@@ -69,7 +83,7 @@ class Storage extends MenuHelper {
                 ")";
         String createUsersTable = "CREATE TABLE IF NOT EXISTS \"USERS\"(\n" +
                 "    id SERIAL NOT NULL,\n" +
-                "    login character varying COLLATE pg_catalog.\"default\" NOT NULL,\n" +
+                "    login character varying COLLATE pg_catalog.\"default\" NOT NULL UNIQUE,\n" +
                 "    password character varying COLLATE pg_catalog.\"default\" NOT NULL UNIQUE,\n" +
                 "    money double precision NOT NULL,\n" +
                 "    CONSTRAINT \"USERS_pkey\" PRIMARY KEY (id)\n" +
@@ -88,7 +102,7 @@ class Storage extends MenuHelper {
                 "    quantity bigint NOT NULL,\n" +
                 "    CONSTRAINT \"ORDERS_POSITIONS_pkey\" PRIMARY KEY (id)\n" +
                 ")";
-
+        dbConnection = dbc.dbConnect();
         Statement statement = dbConnection.createStatement();
         statement.execute(createHomeLibrary);
         statement.execute(createShopDepository);
@@ -128,6 +142,7 @@ class Storage extends MenuHelper {
                     " '1960', '320', '270', 10),\n" +
                     " ('King Stephen', 'Shining', 'Doubleday'," +
                     " '1977', '447', '549', 10)";
+            dbConnection = dbc.dbConnect();
             Statement statement = dbConnection.createStatement();
             statement.execute(fillLibrary);
             statement.execute(fillShop);
@@ -157,6 +172,7 @@ class Storage extends MenuHelper {
 
     // Метод чтения книг из базы данных в список.
     List<Book> readBooksFromTable(String table) throws SQLException {
+        dbConnection = dbc.dbConnect();
         Statement statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
                 ResultSet.CONCUR_UPDATABLE);
         ResultSet resultSet;
@@ -169,7 +185,7 @@ class Storage extends MenuHelper {
                 break;
             case ("\"HOME_LIBRARY\""):
                 String sql = "SELECT bookId, quantity FROM \"HOME_LIBRARY\" WHERE userId = "
-                        + currentUser.getId();
+                        + Main.getCurrentUser().getId();
                 resultSet = statement.executeQuery(sql);
                 List<Integer> indexes = new ArrayList<>();
                 List<Integer> quantities = new ArrayList<>();
@@ -205,6 +221,7 @@ class Storage extends MenuHelper {
 
     //Метод внесения книг в базу данных.
     void addBookToTable(List<Book> list, String table) throws SQLException {
+        dbConnection = dbc.dbConnect();
         Statement statement = dbConnection.createStatement(
                 ResultSet.TYPE_SCROLL_INSENSITIVE,
                 ResultSet.CONCUR_UPDATABLE);
@@ -245,6 +262,7 @@ class Storage extends MenuHelper {
 
     //Метод удаления книги из базы данных.
     void removeBookFromTable(Book book, String table) throws SQLException {
+        dbConnection = dbc.dbConnect();
         Statement statement = dbConnection.createStatement(
                 ResultSet.TYPE_SCROLL_INSENSITIVE,
                 ResultSet.CONCUR_UPDATABLE);
@@ -283,7 +301,7 @@ class Storage extends MenuHelper {
 
             case ("\"HOME_LIBRARY\""): {
                 String sql = "SELECT bookId, quantity FROM \"HOME_LIBRARY\" WHERE userId = "
-                        + currentUser.getId();
+                        + Main.getCurrentUser().getId();
                 resultSet = statement.executeQuery(sql);
                 List<Integer> indexes = new ArrayList<>();
                 List<Integer> quantities = new ArrayList<>();
@@ -318,6 +336,7 @@ class Storage extends MenuHelper {
 
     //Метод поиска книги в базе данных
     List<Book> searchTableForBook(String author, String title, String table) throws SQLException, IOException {
+        dbConnection = dbc.dbConnect();
         List<Book> found = new ArrayList<>();
         Statement statement = dbConnection.createStatement();
         String sql;
@@ -349,7 +368,7 @@ class Storage extends MenuHelper {
                     ids.append(i);
                 }
                 sql = "SELECT bookId, quantity FROM \"HOME_LIBRARY\" WHERE userId = "
-                        + currentUser.getId() + " AND bookId IN (" +
+                        + Main.getCurrentUser().getId() + " AND bookId IN (" +
                         ids + ")";
                 resultSet = statement.executeQuery(sql);
 
@@ -387,6 +406,7 @@ class Storage extends MenuHelper {
 
     //Метод внесения пользователя в базу данных.
     void addUserToTable(User user) throws SQLException {
+        dbConnection = dbc.dbConnect();
 
         String write = "INSERT INTO \"USERS\" (login, password, money) " +
                 "VALUES (?, ?, ?)";
@@ -400,6 +420,7 @@ class Storage extends MenuHelper {
 
     // Метод чтения данных пользователя из базы данных.
     User readUserFromTable(String login) throws SQLException {
+        dbConnection = dbc.dbConnect();
         Statement statement = dbConnection.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM \"USERS\" WHERE lower(login) ="
                 + concatenate(login.toLowerCase()));
@@ -414,6 +435,7 @@ class Storage extends MenuHelper {
 
     //Метод удаления пользователя из базы данных.
     void removeUserFromTable(String login) throws SQLException {
+        dbConnection = dbc.dbConnect();
         Statement statement = dbConnection.createStatement();
         String removeUser = "DELETE * FROM \"USERS\" WHERE (login) =" + concatenate(login);
         statement.execute(removeUser);
@@ -473,6 +495,7 @@ class Storage extends MenuHelper {
 
     //Метод удаления всех заказов пользователя из базы данных.
     void removeUsersOrdersFromTables(String login) throws SQLException {
+        dbConnection = dbc.dbConnect();
         Statement statement = dbConnection.createStatement();
         ResultSet userId = statement.executeQuery("SELECT * FROM \"USERS\" WHERE" +
                 " (login) =" + concatenate(login));
@@ -488,35 +511,45 @@ class Storage extends MenuHelper {
 
     //Метод увдаления отдельного заказа из базы данных.
     void removeOrderFromTables(Order order) throws SQLException {
+        dbConnection = dbc.dbConnect();
         Statement statement = dbConnection.createStatement();
-        ResultSet userId = statement.executeQuery("SELECT * FROM \"USERS\" WHERE" +
-                " (login) =" + concatenate(order.getUser().getLogin()));
-        ResultSet orderId = statement.executeQuery("SELECT * FROM \"ORDERS\" WHERE" +
-                " (userId) =" + userId.getInt("id"));
-        String removeOrder = "DELETE * FROM \"ORDERS\" WHERE (id) =" + orderId.getInt("id");
-        statement.execute(removeOrder);
-        removeOrder = "DELETE * FROM \"ORDERS_POSITIONS\" WHERE (orderid) =" + orderId.getInt("id");
-        statement.execute(removeOrder);
+        String sql = "SELECT * FROM \"USERS\" WHERE" +
+                " (login) =" + concatenate(order.getUser().getLogin());
+        ResultSet resultSet = statement.executeQuery(sql);
+        resultSet.next();
+        int id = resultSet.getInt("id");
+        sql = "SELECT * FROM \"ORDERS\" WHERE" +
+                " (userId) =" + id + " AND (id) =" + order.getId();
+        resultSet = statement.executeQuery(sql);
+        resultSet.next();
+        id = resultSet.getInt("id");
+        sql = "DELETE FROM \"ORDERS\" WHERE (id) =" + id;
+        statement.execute(sql);
+        sql = "DELETE FROM \"ORDERS_POSITIONS\" WHERE (orderid) =" + id;
+        statement.execute(sql);
+
 
         for (Book book : order.getBooks()) {
-            ResultSet bookId = statement.executeQuery("SELECT * FROM \"SHOP_DEPO\" WHERE author ="
+            sql = "SELECT * FROM \"SHOP_DEPO\" WHERE author ="
                     + concatenate(book.getAuthor()) +
                     " AND title =" + concatenate(book.getTitle()) +
                     " AND publisher =" + concatenate(book.getPublisher()) +
                     " AND year =" + book.getYear() +
                     " AND pages =" + book.getPages() +
-                    " AND price =" + book.getPrice());
-
-            String updateQuantity = "UPDATE \"SHOP_DEPO\" SET quantity =" +
-                    (bookId.getInt("quantity") + book.getQuantity()) +
-                    " WHERE id =" + bookId.getInt("id");
-            statement.executeUpdate(updateQuantity);
+                    " AND price =" + book.getPrice();
+            resultSet = statement.executeQuery(sql);
+            resultSet.next();
+            sql = "UPDATE \"SHOP_DEPO\" SET quantity =" +
+                    (resultSet.getInt("quantity") + book.getQuantity()) +
+                    " WHERE id =" + resultSet.getInt("id");
+            statement.executeUpdate(sql);
         }
         statement.close();
     }
 
     // Метод чтения заказов пользователя из базы данных в список.
     List<Order> readOrdersFromTable(String login) throws SQLException {
+        dbConnection = dbc.dbConnect();
 
         List<Order> orders = new ArrayList<>();
         List<Book> books;
@@ -595,6 +628,7 @@ class Storage extends MenuHelper {
 
     //Метод оплаты заказа текущего юзера.
     void payForOrder(Order order) throws SQLException {
+        dbConnection = dbc.dbConnect();
         Statement statement = dbConnection.createStatement();
         String updateIsPaid = "UPDATE \"ORDERS\" SET isPaid = true WHERE (id) =" + order.getId();
         statement.executeUpdate(updateIsPaid);
