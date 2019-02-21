@@ -4,35 +4,39 @@ import java.util.List;
 public class MenuItemShipper extends MenuHelper implements MenuItem {
 
     private List<Order> orders;
-    private int i = 1;
 
     public String description() {
         return "Shipping items to user's address.";
     }
 
     public void select() {
-        Order orderToShip;
-        String login = userInputReader.askString("Enter user's login to look for his orders list.");
-        try {
-            storage.readUserFromTable(login);
-        } catch (SQLException e) {
-            System.out.println("No matching login found in database.");
+        boolean isPaid;
+        MenuItemOrdersDisplay menuItemShowOrders = new MenuItemOrdersDisplay();
+        menuItemShowOrders.select();
+        int i;
+
+        while (true) {
+            i = userInputReader.askInt("Select order to ship");
+            if (i != 0 | i < (menuItemShowOrders.orders.size() - 1)) {
+                Order orderToShip = menuItemShowOrders.orders.get(i - 1);
+                isPaid = orderToShip.getIsPaid();
+                if (!isPaid) {
+                    System.out.println("The order you selected has not been paid for and cannot be shipped.");
+                    return;
+                } else {
+                    try {
+                        System.out.println(description());
+                        storage.shipOrder(orderToShip);
+                        System.out.println("Order shipped successfully.");
+                        break;
+                    } catch (SQLException e) {
+                        System.out.println("Unable to ship order");
+                        e.printStackTrace();
+                    }
+                }
+
+            } else System.out.println("No such order in list.");
+
         }
-
-        try {
-            orders = storage.readOrdersFromTable(login);
-
-            for (Order order : orders) {
-                System.out.println(i + ". " + order);
-                i++;
-            }
-        } catch (SQLException e) {
-            System.out.println("Current user has no active orders.");
-        }
-
-        orderToShip = orders.get(userInputReader.askInt("Choose order to ship"));
-//        storage.shipOrder(orderToShip);
-
-
     }
 }

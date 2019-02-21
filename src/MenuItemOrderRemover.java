@@ -25,7 +25,7 @@ public class MenuItemOrderRemover extends MenuHelper implements MenuItem {
                 else {
                     try {
                         System.out.println(description());
-                        storage.removeOrderFromTables(orderToRemove);
+                        storage.removeOrderFromTables(orderToRemove, true);
                         System.out.println("Order removed successfully.");
                         break;
                     } catch (SQLException e) {

@@ -437,7 +437,8 @@ class Storage {
     void removeUserFromTable(String login) throws SQLException {
         dbConnection = dbc.dbConnect();
         Statement statement = dbConnection.createStatement();
-        String removeUser = "DELETE * FROM \"USERS\" WHERE (login) =" + concatenate(login);
+        String removeUser = "DELETE * FROM \"USERS\" WHERE lower(login) ="
+                + concatenate(login.toLowerCase());
         statement.execute(removeUser);
         statement.close();
     }
@@ -510,11 +511,11 @@ class Storage {
     }
 
     //Метод увдаления отдельного заказа из базы данных.
-    void removeOrderFromTables(Order order) throws SQLException {
+    void removeOrderFromTables(Order order, boolean restoreQuantity) throws SQLException {
         dbConnection = dbc.dbConnect();
         Statement statement = dbConnection.createStatement();
-        String sql = "SELECT * FROM \"USERS\" WHERE" +
-                " (login) =" + concatenate(order.getUser().getLogin());
+        String sql = "SELECT * FROM \"USERS\" WHERE lower(login) =" +
+                concatenate(order.getUser().getLogin().toLowerCase());
         ResultSet resultSet = statement.executeQuery(sql);
         resultSet.next();
         int id = resultSet.getInt("id");
@@ -529,20 +530,22 @@ class Storage {
         statement.execute(sql);
 
 
-        for (Book book : order.getBooks()) {
-            sql = "SELECT * FROM \"SHOP_DEPO\" WHERE author ="
-                    + concatenate(book.getAuthor()) +
-                    " AND title =" + concatenate(book.getTitle()) +
-                    " AND publisher =" + concatenate(book.getPublisher()) +
-                    " AND year =" + book.getYear() +
-                    " AND pages =" + book.getPages() +
-                    " AND price =" + book.getPrice();
-            resultSet = statement.executeQuery(sql);
-            resultSet.next();
-            sql = "UPDATE \"SHOP_DEPO\" SET quantity =" +
-                    (resultSet.getInt("quantity") + book.getQuantity()) +
-                    " WHERE id =" + resultSet.getInt("id");
-            statement.executeUpdate(sql);
+        if (restoreQuantity) {
+            for (Book book : order.getBooks()) {
+                sql = "SELECT * FROM \"SHOP_DEPO\" WHERE author ="
+                        + concatenate(book.getAuthor()) +
+                        " AND title =" + concatenate(book.getTitle()) +
+                        " AND publisher =" + concatenate(book.getPublisher()) +
+                        " AND year =" + book.getYear() +
+                        " AND pages =" + book.getPages() +
+                        " AND price =" + book.getPrice();
+                resultSet = statement.executeQuery(sql);
+                resultSet.next();
+                sql = "UPDATE \"SHOP_DEPO\" SET quantity =" +
+                        (resultSet.getInt("quantity") + book.getQuantity()) +
+                        " WHERE id =" + resultSet.getInt("id");
+                statement.executeUpdate(sql);
+            }
         }
         statement.close();
     }
@@ -561,8 +564,8 @@ class Storage {
         Statement statement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
                 ResultSet.CONCUR_UPDATABLE);
 
-        String sql = "SELECT * FROM \"USERS\" WHERE (login) =" +
-                concatenate(login);
+        String sql = "SELECT * FROM \"USERS\" WHERE lower(login) =" +
+                concatenate(login).toLowerCase();
         ResultSet resultSet = statement.executeQuery(sql);
         resultSet.next();
         int userId = resultSet.getInt("id");
@@ -632,11 +635,38 @@ class Storage {
         Statement statement = dbConnection.createStatement();
         String updateIsPaid = "UPDATE \"ORDERS\" SET isPaid = true WHERE (id) =" + order.getId();
         statement.executeUpdate(updateIsPaid);
+        statement.close();
     }
 
     //Метод отправки заказа в домашнюю библиотеку юзера.
-    void shipOrder(Order order, Connection dbConnection) throws SQLException {
+    void shipOrder(Order order) throws SQLException {
+        List<Book> books = order.getBooks();
+        dbConnection = dbc.dbConnect();
+        Statement statement = dbConnection.createStatement();
+        ResultSet resultSet;
 
+        for (Book book : books) {
+            String sql = "SELECT * FROM \"SHOP_DEPO\" WHERE author ="
+                    + concatenate(book.getAuthor()) +
+                    " AND title =" + concatenate(book.getTitle()) +
+                    " AND publisher =" + concatenate(book.getPublisher()) +
+                    " AND year =" + book.getYear() +
+                    " AND pages =" + book.getPages() +
+                    " AND price =" + book.getPrice();
+            resultSet = statement.executeQuery(sql);
+            resultSet.next();
+            int bookId = resultSet.getInt("id");
+
+            String addBookId = "INSERT INTO \"HOME_LIBRARY\" (bookId, quantity, userid) " +
+                    "VALUES (?, ?, ?)";
+            PreparedStatement addOrderPositionsStatement = dbConnection.prepareStatement(addBookId);
+            addOrderPositionsStatement.setInt(1, bookId);
+            addOrderPositionsStatement.setInt(2, book.getQuantity());
+            addOrderPositionsStatement.setInt(3, order.getUser().getId());
+            addOrderPositionsStatement.executeUpdate();
+        }
+        removeOrderFromTables(order, false);
+        statement.close();
     }
 }
 

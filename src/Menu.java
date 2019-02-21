@@ -25,7 +25,7 @@ public class Menu {
                         throw new SQLException();
                     }
                     storage.addUserToTable(currentUser);
-                    Main.setCurrentUser(currentUser);
+                    Main.setCurrentUser(storage.readUserFromTable(login));
                     break;
                 } catch (SQLException e) {
                     System.out.println("This login is already preoccupied.");
