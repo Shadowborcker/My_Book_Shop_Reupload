@@ -7,7 +7,7 @@ import java.util.List;
 class MenuItemBookRemover extends MenuHelper implements MenuItem {
 
     public String description() {
-        return "Removing books from store.";
+        return "Removing books from the store.";
     }
 
     public void select() throws SQLException {

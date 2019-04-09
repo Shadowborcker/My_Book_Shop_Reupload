@@ -67,9 +67,9 @@ public class Menu {
         menumap.put("order", new MenuItemOrderAdder()); // Tested
         menumap.put("show orders", new MenuItemOrdersDisplay()); // Tested
         menumap.put("remove order", new MenuItemOrderRemover());
-        menumap.put("pay", new MenuItemPayer());
-        menumap.put("ship", new MenuItemShipper());
-        menumap.put("exit", new MenuItemExit());
+        menumap.put("pay", new MenuItemPayer()); //Tested
+        menumap.put("ship", new MenuItemShipper()); //Tested
+        menumap.put("exit", new MenuItemExit()); //Tested
 
         return menumap;
     }

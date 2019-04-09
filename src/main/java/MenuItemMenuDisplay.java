@@ -7,14 +7,20 @@ class MenuItemMenuDisplay implements MenuItem {
     public void select() {
 
         System.out.println(description());
-        System.out.println("Show books - displays the list of all books in specified location\n" +
-                "Refill  - refills specified book storage\n" +
-                "Add books - adds books to specified location\n" +
-                "Remove books - removes selected books from specified location\n" +
-                "Sort - sorts all books by user defined criteria\n" +
-                "Search - searches for a certain book\n" +
-                "Cash out - pays for all the books in your basket and\n" +
-                " sends them to your home library\n" +
+        System.out.println("Show menu - displays this menu\n" +
+                "Show books - displays list of books in a specified location\n" +
+                "Add book - adds new book to the store\n" +
+                "Remove book - removes selected book from the store\n" +
+                "Sort - displays books in a specified location sorted by user defined criteria\n" +
+                "Search - searches for a certain book in a specified location\n" +
+                "Buy - puts specified book in your basket\n" +
+                "Clear basket - removes all the books from your basket\n" +
+                "Order - forms an order with all the books from your basket\n" +
+                "Remove order - removes previously formed order if it has not been paid for\n" +
+                "Show orders - displays all user's orders\n" +
+                "Pay - pays for selected order with user's funds\n" +
+                "Ship - ships books from paid order to user's library\n" +
+                "Remove user - removes specified user from database in he has no paid orders\n" +
                 "Exit - closes Black Books");
     }
 
