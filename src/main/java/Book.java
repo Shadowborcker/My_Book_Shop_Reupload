@@ -56,7 +56,7 @@ public class Book {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Book)) return false;
         Book book = (Book) o;
         return Objects.equals(author.toLowerCase(), book.author.toLowerCase()) &&
                 Objects.equals(title.toLowerCase(), book.title.toLowerCase());
@@ -64,7 +64,7 @@ public class Book {
 
         @Override
     public int hashCode() {
-        return Objects.hash(author, title, publisher, year, pages, price);
+        return Objects.hash(author.toLowerCase(), title.toLowerCase());
     }
 
     // Переопределяем toString для вывода на экран.
